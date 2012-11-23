@@ -1,0 +1,35 @@
+IMPORTANT NOTE:
+
+error handling is not implemented yet. if you do something wrong octave
+will hang or crash
+
+the toolbox was written to make simple test automation. it is far away
+from being mature.
+
+----------
+
+before you start you need to compile all toolboxes
+see README file at the directories
+
+----------
+
+ser_tb/		serial toolbox, works with cygwin and linux
+
+tcp_tb/		tcp toolbox, works with cygwin and linux
+		note: disconnects from remote side are not
+		      handled correct
+
+gpib_tb/	gpib toolbox, works with linux
+
+inittb.m	init toolboxes
+
+getfreq1.m	read some values from PM6666 counter via gpib
+
+telnetlogin.m	performs a telnet login
+
+serialtest.m	do something via serial line
+
+
+----------
+
+start octave in this directory and type "inittb"

@@ -1,0 +1,5 @@
+compile tcp_tb.cc:
+
+    mkoctfile tcp_tb.cc
+    
+should work for linux and cygwin
