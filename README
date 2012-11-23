@@ -13,22 +13,44 @@ see README file at the directories
 
 ----------
 
-ser_tb/		serial toolbox, works with cygwin and linux
+gpib_tb/       Talks to instruments over GPIB interface using open
+               source linux-gpib. Tested with NI_GPIB_USB_B Interface,
+               but should work with all GPIB adapters supported by
+               linux-gpib.
+               (linux)
 
-tcp_tb/		tcp toolbox, works with cygwin and linux
-		note: disconnects from remote side are not
-		      handled correct
+gpibenet_tb/   Talks to instruments over GPIB using NIs GPIBENET-100,
+               using tcp functions from 'tcp_tb'
+               note: still very incomplete
+               (cygwin, linux)
 
-gpib_tb/	gpib toolbox, works with linux
+ser_tb/        Communicate over serial port
+               (cygwin, linux)
 
-inittb.m	init toolboxes
+tcp_tb/        Comunicate over TCP
+               note: disconnects from remote side are not handled
+               (cygwin, linux)             
 
-getfreq1.m	read some values from PM6666 counter via gpib
+usbtmc_tb/     Talks to instruments over USBTMC using the USBTMC
+               interface of actual linux kernel.
+               (linux)
 
-telnetlogin.m	performs a telnet login
+visa_tb/       Talks to all interfaces that are supported by VISA.
+               Someone started an openvisa implementation for linux,
+               but it is not functional. However, you are able to build
+               visa_tb by linking to openvisa.
+               note: Linking to National Instruments VISA is most
+               probably a violation of GPL.
 
-serialtest.m	do something via serial line
+vxi11_tb/      Talks to instruments over VXI-11 interface.
+               note: On cygwin you should not open/close a VXI11 session
+               to same instrument serveral times. Seems that libtirpc
+               doesn't close the sessions completely.
+               (cygwin, linux)
 
+examples/      some functions that use toolbox to communicate
+
+inittb.m       init toolboxes
 
 ----------
 
