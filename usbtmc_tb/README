@@ -1,5 +1,0 @@
-compile usbtmc_tb.cc
-
-    mkoctfile usbtmc_tb.cc
-
-should work for linux
