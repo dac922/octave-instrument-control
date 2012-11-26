@@ -45,7 +45,7 @@ Close the interface and release a file descriptor.\n \
     const octave_base_value& rep = args(0).get_rep();
     gpib = &((octave_gpib &)rep);
 
-    gpib->close();
+    //gpib->close();
 
     return octave_value();
 }

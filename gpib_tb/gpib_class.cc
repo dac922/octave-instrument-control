@@ -48,18 +48,14 @@ octave_gpib::octave_gpib()
     this->fd = -1;
 }
 
-octave_gpib::octave_gpib(int minor, int gpibid, int secid, int timeout)
+octave_gpib::octave_gpib(int minor, int gpibid, int secid, int timeout, int send_eoi, int eos_mode)
 {
-    const int send_eoi = 1;
-    const int eos_mode = 0;
-
-    this->fd = ::ibdev(minor, gpibid, secid, timeout, send_eoi, eos_mode);
-    //testfd = this->fd;
-}
-
-octave_gpib::~octave_gpib()
-{
-    this->close();
+    this->minor = minor;
+    this->gpibid = gpibid;
+    this->secid = secid;
+    this->timeout = timeout;
+    this->send_eoi = sendeoi;
+    this->eos_mode = eos_mode;
 }
 
 void octave_gpib::print (std::ostream& os, bool pr_as_read_syntax ) const
@@ -75,24 +71,28 @@ void octave_gpib::print_raw (std::ostream& os, bool pr_as_read_syntax) const
 
 int octave_gpib::read(char *buf, unsigned int len)
 {
-    int gperr;
-
-    if (this->get_fd() < 0)
+    int gperr,fd;
+    int bytes_read = 0, read_retval = -1;
+    
+    fd = ibdev(this->minor, this->gpibid, this->secid, this->timeout, this->send_eoi, this->eos_mode);
+    if (fd < 0)
     {
-        error("gpib_read: Interface must be opened first...");
+        error("gpib_read: error opening gpib device...");
         return -1;
     }
 
-    int bytes_read = 0, read_retval = -1;
+    gperr = ibrd(fd,(void *)(buf + bytes_read),len);
 
-    gperr = ibrd(this->get_fd(),(void *)(buf + bytes_read),len);
-
-    if ( !(gperr & CMPL) && !(gperr & TIMO) && !(gperr & END) ) {
+    if ( !(gperr & CMPL) && !(gperr & TIMO) && !(gperr & END) )
+    {
+		ibonl(fd,0);
         error("gpib_read: Error while reading: %d\n", gperr);
         return -1;
-    }
+    } 
 
     bytes_read = ThreadIbcnt();
+
+    ibonl(fd,0);
 
     return bytes_read;
 
@@ -100,15 +100,16 @@ int octave_gpib::read(char *buf, unsigned int len)
 
 int octave_gpib::write(string str)
 {
-    if (this->get_fd() < 0)
+    int gperr,fd;
+    
+    fd = ibdev(this->minor, this->gpibid, this->secid, this->timeout, this->send_eoi, this->eos_mode);
+    if (fd < 0)
     {
-        error("gpib: Interface must be opened first...");
+        error("gpib_read: error opening gpib device...");
         return -1;
     }
 
-    int gperr;
-    
-    if ( (gperr = ibwrt(this->get_fd(),str.c_str(),str.length())) & ERR) {
+    if ( (gperr = ibwrt(fd,str.c_str(),str.length())) & ERR) {
         // warning: can not write
         if (ThreadIberr() != ENOL) {
             // ENOL is handled by library
@@ -116,19 +117,22 @@ int octave_gpib::write(string str)
         }
     }
     
+    ibonl(fd,0);
+    
     return gperr;
 }
 
 int octave_gpib::write(unsigned char *buf, int len)
 {
-    if (this->get_fd() < 0)
+    int gperr,fd;
+    
+    fd = ibdev(this->minor, this->gpibid, this->secid, this->timeout, this->send_eoi, this->eos_mode);
+    if (fd < 0)
     {
-        error("gpib: Interface must be opened first...");
+        error("gpib_read: error opening gpib device...");
         return -1;
     }
-
-    int gperr;
-    
+      
     if ( (gperr = ibwrt(this->get_fd(),buf,len)) & ERR) {
         // warning: can not write
         if (ThreadIberr() != ENOL) {
@@ -137,28 +141,17 @@ int octave_gpib::write(unsigned char *buf, int len)
         }
     }
     
+    ibonl(fd,0);
+    
     return gperr;
 }
 
 int octave_gpib::set_timeout(int timeout)
 {
-    int gperr;
-
-    if (this->get_fd() < 0)
-    {
-        error("gpib: Interface must be opened first...");
-        return -1;
-    }
-
     if (timeout < 0 || timeout > 17)
     {
         error("gpib_timeout: timeout must be between 0 and 17");
         return -1;
-    }
-
-    if ( (gperr = ibtmo(this->get_fd(),timeout)) & ERR) {
-        error("gpib_timeout: set gpib timeout failed");
-        return gperr;
     }
 
     this->timeout = timeout;
@@ -169,19 +162,4 @@ int octave_gpib::set_timeout(int timeout)
 int octave_gpib::get_timeout()
 {
     return this->timeout;
-}
-
-
-int octave_gpib::close()
-{
-    int retval = -1;
-
-    if (this->get_fd() > 0)
-    {
-        retval = ::ibonl(this->get_fd(),0);
-        //retval = ::ibonl(testfd,0);
-        this->fd = -1;
-    }
-
-    return retval;
 }

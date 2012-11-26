@@ -34,14 +34,11 @@ class octave_gpib : public octave_base_value
 public:
     octave_gpib();
     octave_gpib(int, int, int, int);
-    ~octave_gpib();
 
     int write(string);
     int write(unsigned char*, int);
 
     int read(char *, unsigned int);
-
-    int close();
 
     int set_timeout(int);
     int get_timeout();
@@ -49,8 +46,6 @@ public:
     //int set_sad(int);
     //int set_send_eoi(int);
     //int set_eos_mode(int);
-
-    int get_fd() { return this->fd; }
 
     // Overloaded base functions
     double gpib_value() const { return (double)this->fd; }
@@ -70,11 +65,12 @@ public:
 
    
 private:
-	int fd;
-	int timeout;
+	
 
 	int minor;
+	int gpibid;
 	int sad;
+	int timeout;
 	int send_eoi;
 	int eos_mode;
 
