@@ -128,8 +128,7 @@ int octave_tcp::read(char *buf, unsigned int len, int timeout)
         
         FD_ZERO(&readfds);
         FD_SET(this->get_fd(),&readfds);
-        read_retval = ::select(this->get_fd()+1,&readfds,NULL,NULL,ptv);
-        if (read_retval < 0)
+        if (::select(this->get_fd()+1,&readfds,NULL,NULL,ptv) < 0)
         {
             error("tcp_read: Error while reading/select: %s\n", strerror(errno));
             break;
