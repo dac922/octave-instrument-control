@@ -28,11 +28,11 @@ static bool type_loaded = false;
 
 DEFUN_DLD (usbtmc, args, nargout, 
         "-*- texinfo -*-\n\
-@deftypefn {Loadable Function} {@var{usbtmc} = } usbtmc ([@var{path}]])\n \
+@deftypefn {Loadable Function} {@var{usbtmc} = } usbtmc (@var{path})\n \
 \n\
 Open usbtmc interface.\n \
 \n\
-@var{path} - the interface path of type String. If omitted defaults to '/dev/usbtmc-0'. @*\
+@var{path} - the interface path of type String. If omitted defaults to '/dev/usbtmc0'. @*\
 \n\
 The usbtmc() shall return instance of @var{octave_usbtmc} class as the result @var{usbtmc}.\n \
 @end deftypefn")
@@ -57,7 +57,7 @@ The usbtmc() shall return instance of @var{octave_usbtmc} class as the result @v
 
     // Default values
     int oflags = O_RDWR;
-    string path("/dev/usbtmc-0");
+    string path("/dev/usbtmc0");
 
     // Parse the function arguments
     if (args.length() > 0)

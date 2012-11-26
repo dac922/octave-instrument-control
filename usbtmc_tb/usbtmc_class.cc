@@ -72,9 +72,9 @@ int octave_usbtmc::read(char *buf, unsigned int len)
         return -1;
     }
 
-    int retval = ::read(this->get_fd(), buf, len);
+    int retval = ::read(get_fd(), buf, len);
 
-    if (retval != len)
+    if (retval < 0)
         error("usbtmc: Failed to read from the usbtmc bus: %s\n", strerror(errno));
 
     return retval;
@@ -88,7 +88,7 @@ int octave_usbtmc::write(unsigned char *buf, int len)
         return -1;
     }
 
-    int retval = ::write(this->get_fd(), buf, len);
+    int retval = ::write(get_fd(), buf, len);
 
     if (retval < 0)
         error("usbtmc: Failed to write to the usbtmc bus: %s\n", strerror(errno));
