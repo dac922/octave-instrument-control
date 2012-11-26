@@ -29,12 +29,12 @@ static bool type_loaded = false;
 
 DEFUN_DLD (tcp, args, nargout, 
 "-*- texinfo -*-\n\
-@deftypefn {Loadable Function} {@var{tcp} = } tcp ([@var{path}], [@var{port}], [@var{timeout}])\n \
+@deftypefn {Loadable Function} {@var{tcp} = } tcp ([@var{ipaddress}], [@var{port}], [@var{timeout}])\n \
 \n\
 Open tcp interface.\n \
 \n\
-@var{address} - the interface path of type String. If omitted defaults to '/dev/ttyUSB0'. @*\
-@var{baudrate} - the baudrate of interface. If omitted defaults to 115200. @*\
+@var{ipaddress} - the ip address of type String. If omitted defaults to '127.0.0.1'. @*\
+@var{port} - the port number to connect. If omitted defaults to 23. @*\
 @var{timeout} - the interface timeout value. If omitted defaults to blocking call.\n \
 \n\
 The tcp() shall return instance of @var{octave_tcp} class as the result @var{tcp}.\n \
@@ -59,7 +59,7 @@ The tcp() shall return instance of @var{octave_tcp} class as the result @var{tcp
     }
     
     // Default values
-    string address("localhost");
+    string address("127.0.0.1");
     int port = 23;
     int timeout = -1;
     
@@ -106,7 +106,7 @@ The tcp() shall return instance of @var{octave_tcp} class as the result @var{tcp
         }
     }
 
-    // Open the interface
+    // Open the interface and connect
     octave_tcp* retval = new octave_tcp(address, port);
 
     if (retval->get_fd() < 0)

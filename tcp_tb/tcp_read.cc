@@ -39,7 +39,7 @@ DEFUN_DLD (tcp_read, args, nargout,
 Read from tcp interface.\n \
 \n\
 @var{tcp} - instance of @var{octave_tcp} class.@*\
-@var{n} - number of bytes to attempt to read of type Integer.\n \
+@var{n} - number of bytes to attempt to read of type Integer\n \
 @var{timeout} - timeout in ms if different from default of type Integer\n \
 \n\
 The tcp_read() shall return number of bytes successfully read in @var{count} as Integer and the bytes themselves in @var{data} as uint8 array.\n \
@@ -72,7 +72,7 @@ The tcp_read() shall return number of bytes successfully read in @var{count} as 
             print_usage();
             return octave_value(-1);
         }
-	}
+    }
 
     buffer_len = args(1).int_value();
     
@@ -93,9 +93,8 @@ The tcp_read() shall return number of bytes successfully read in @var{count} as 
     int timeout = tcp->get_timeout();
     if (args.length() == 3)
     {
-		timeout = args(2).int_value();
-	}
-	warning("tcp_read: timeout = %d\n",timeout);
+        timeout = args(2).int_value();
+    }
 
     // Register custom interrupt signal handler
     octave_set_signal_handler(SIGINT, read_sighandler);

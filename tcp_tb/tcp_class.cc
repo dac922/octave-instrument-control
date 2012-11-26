@@ -52,17 +52,29 @@ octave_tcp::octave_tcp()
 
 octave_tcp::octave_tcp(string address, int port)
 {
-	struct sockaddr_in sin;
-	int sockerr;
-	
-	sin.sin_addr.s_addr = inet_addr(address.c_str());
-	sin.sin_family = AF_INET;
-	sin.sin_port = htons(port);
-	bzero(&(sin.sin_zero),8);
+    struct sockaddr_in sin;
+    int sockerr;
+    
+    sin.sin_addr.s_addr = inet_addr(address.c_str());
+    sin.sin_family = AF_INET;
+    sin.sin_port = htons(port);
+    bzero(&(sin.sin_zero),8);
 
-	this->fd = socket(AF_INET, SOCK_STREAM,0);
-	sockerr = connect(this->fd,(struct sockaddr*)&sin, sizeof(struct sockaddr));
-
+    this->fd = socket(AF_INET, SOCK_STREAM,0);
+    if (this->fd < 0)
+    {
+        error("tcp: error opening socket : %s\n", strerror(errno));
+        octave_tcp::close();
+        return;
+    }
+    
+    sockerr = connect(this->fd,(struct sockaddr*)&sin, sizeof(struct sockaddr));
+    if (sockerr < 0)
+    {
+        error("tcp: error on connect : %s\n", strerror(errno));
+        octave_tcp::close();
+        return;
+    }
 }
 
 octave_tcp::~octave_tcp()
@@ -83,12 +95,12 @@ void octave_tcp::print_raw (std::ostream& os, bool pr_as_read_syntax) const
 
 int octave_tcp::read(char *buf, unsigned int len, int timeout)
 {
-	
-	struct timeval tv;
-	struct timeval *ptv;
-	
-	fd_set readfds;
-	
+    
+    struct timeval tv;
+    struct timeval *ptv;
+    
+    fd_set readfds;
+    
     if (this->get_fd() < 0)
     {
         error("tcp_read: Interface must be opened first...");
@@ -100,41 +112,41 @@ int octave_tcp::read(char *buf, unsigned int len, int timeout)
     // While not interrupted in blocking mode
     while (!read_interrupt) 
     {
-		/* tv.tv_sec = timeout / 1000;
-		 * tv.tv_usec = (timeout % 1000) * 1000;
-		 */
-		
-		ptv = &tv;
+        /* tv.tv_sec = timeout / 1000;
+         * tv.tv_usec = (timeout % 1000) * 1000;
+         */
+        
+        ptv = &tv;
         tv.tv_sec = 0;
         tv.tv_usec = timeout * 1000;
         
         // blocking read
         if (timeout < 0)
         {
-			ptv = NULL;
-		}
-		
-		FD_ZERO(&readfds);
-		FD_SET(this->get_fd(),&readfds);
-		read_retval = ::select(this->get_fd()+1,&readfds,NULL,NULL,ptv);
+            ptv = NULL;
+        }
+        
+        FD_ZERO(&readfds);
+        FD_SET(this->get_fd(),&readfds);
+        read_retval = ::select(this->get_fd()+1,&readfds,NULL,NULL,ptv);
         if (read_retval < 0)
         {
             error("tcp_read: Error while reading/select: %s\n", strerror(errno));
             break;
         }
-		
+        
         if (FD_ISSET(this->get_fd(),&readfds))
         {
-			read_retval = ::recv(this->get_fd(),(void *)(buf + bytes_read),len - bytes_read,0);
-			if (read_retval < 0)
+            read_retval = ::recv(get_fd(),(void *)(buf + bytes_read),len - bytes_read,0);
+            if (read_retval < 0)
             {
                 error("tcp_read: Error while reading: %s\n", strerror(errno));
                 break;
             }
-		} else {
+        } else {
             // Timeout
-            break;		
-		}
+            break;        
+        }
 
         bytes_read += read_retval;
 

@@ -24,10 +24,10 @@ DEFUN_DLD (tcp_timeout, args, nargout,
 @deftypefn {Loadable Function} {} tcp_timeout (@var{tcp}, @var{timeout})\n \
 @deftypefnx {Loadable Function} {@var{t} = } tcp_timeout (@var{tcp})\n \
 \n\
-Set new or get existing tcp interface timeout parameter used for tcp_read() requests. The timeout value is specified in tenths of a second.\n \
+Set new or get existing tcp interface timeout parameter used for tcp_read() requests. The timeout value is specified in milliseconds.\n \
 \n\
 @var{tcp} - instance of @var{octave_tcp} class.@*\
-@var{timeout} - tcp_read() timeout value in tenths of a second. Value of -1 means a blocking call. Maximum value of 255 (i.e. 25.5 seconds).\n \
+@var{timeout} - tcp_read() timeout value in milliseconds. Value of -1 means a blocking call.\n \
 \n\
 If @var{timeout} parameter is omitted, the tcp_timeout() shall return current timeout value as the result @var{t}.\n \
 @end deftypefn")
