@@ -38,6 +38,8 @@ using std::string;
 
 volatile bool read_interrupt = false;
 
+//static int testfd;
+
 DEFINE_OCTAVE_ALLOCATOR (octave_gpib);
 DEFINE_OV_TYPEID_FUNCTIONS_AND_DATA (octave_gpib, "octave_gpib", "octave_gpib");
 
@@ -48,10 +50,11 @@ octave_gpib::octave_gpib()
 
 octave_gpib::octave_gpib(int minor, int gpibid, int secid, int timeout)
 {
-	const int send_eoi = 1;
-	const int eos_mode = 0;
+    const int send_eoi = 1;
+    const int eos_mode = 0;
 
-	this->fd = ibdev(minor, gpibid, secid, timeout, send_eoi, eos_mode);
+    this->fd = ::ibdev(minor, gpibid, secid, timeout, send_eoi, eos_mode);
+    //testfd = this->fd;
 }
 
 octave_gpib::~octave_gpib()
@@ -82,14 +85,14 @@ int octave_gpib::read(char *buf, unsigned int len)
 
     int bytes_read = 0, read_retval = -1;
 
-	gperr = ibrd(this->get_fd(),(void *)(buf + bytes_read),len);
+    gperr = ibrd(this->get_fd(),(void *)(buf + bytes_read),len);
 
     if ( !(gperr & CMPL) && !(gperr & TIMO) && !(gperr & END) ) {
         error("gpib_read: Error while reading: %d\n", gperr);
         return -1;
     }
 
-	bytes_read = ThreadIbcnt();
+    bytes_read = ThreadIbcnt();
 
     return bytes_read;
 
@@ -106,14 +109,14 @@ int octave_gpib::write(string str)
     int gperr;
     
     if ( (gperr = ibwrt(this->get_fd(),str.c_str(),str.length())) & ERR) {
-		// warning: can not write
-		if (ThreadIberr() != ENOL) {
-			// ENOL is handled by library
-			error("gpib: can not write gpib data to device");
-		}
-	}
-	
-	return gperr;
+        // warning: can not write
+        if (ThreadIberr() != ENOL) {
+            // ENOL is handled by library
+            error("gpib: can not write gpib data to device");
+        }
+    }
+    
+    return gperr;
 }
 
 int octave_gpib::write(unsigned char *buf, int len)
@@ -127,19 +130,19 @@ int octave_gpib::write(unsigned char *buf, int len)
     int gperr;
     
     if ( (gperr = ibwrt(this->get_fd(),buf,len)) & ERR) {
-		// warning: can not write
-		if (ThreadIberr() != ENOL) {
-			// ENOL is handled by library
-			error("gpib: can not write gpib data to device");
-		}
-	}
-	
-	return gperr;
+        // warning: can not write
+        if (ThreadIberr() != ENOL) {
+            // ENOL is handled by library
+            error("gpib: can not write gpib data to device");
+        }
+    }
+    
+    return gperr;
 }
 
 int octave_gpib::set_timeout(int timeout)
 {
-	int gperr;
+    int gperr;
 
     if (this->get_fd() < 0)
     {
@@ -153,10 +156,10 @@ int octave_gpib::set_timeout(int timeout)
         return -1;
     }
 
-	if ( (gperr = ibtmo(this->get_fd(),timeout)) & ERR) {
-		error("gpib_timeout: set gpib timeout failed");
-		return gperr;
-	}
+    if ( (gperr = ibtmo(this->get_fd(),timeout)) & ERR) {
+        error("gpib_timeout: set gpib timeout failed");
+        return gperr;
+    }
 
     this->timeout = timeout;
 
@@ -172,10 +175,11 @@ int octave_gpib::get_timeout()
 int octave_gpib::close()
 {
     int retval = -1;
-    
+
     if (this->get_fd() > 0)
     {
-        retval = ibonl(this->get_fd(),0);
+        retval = ::ibonl(this->get_fd(),0);
+        //retval = ::ibonl(testfd,0);
         this->fd = -1;
     }
 

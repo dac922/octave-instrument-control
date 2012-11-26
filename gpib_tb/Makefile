@@ -3,7 +3,7 @@ OBJ := gpib_class.o
 
 MKOCTFILE ?= mkoctfile
 
-GPIBPATH = /data/devel/octave/oic-toolbox/gpib_tb/linux-gpib-3.2.16
+GPIBPATH = /data/devel/octave/oic-toolbox/gpib_tb/linux-gpib
 CFLAGS = -I$(GPIBPATH)/include
 GPIBLIBS = $(GPIBPATH)/lib/.libs/*.o
 

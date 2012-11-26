@@ -2,17 +2,15 @@
 #
 CURDIR=`pwd`
 #
-MKOCTFILE=mkoctfile
-
 #
 #
 #
-# gpiv firmware
+# gpib firmware
 GPIBFW="http://linux-gpib.sourceforge.net/firmware/gpib_firmware-2006-11-12.tar.gz"
 FIRMWAREPATH="$CURDIR/gpib_firmware-2006-11-12/ni_gpib_usb_b"
 # gpib linux
-GPIBVERSION=linux-gpib-3.2.16
-GPIBPATH=$CURDIR/$GPIBVERSION
+GPIBSVN="https://linux-gpib.svn.sourceforge.net/svnroot/linux-gpib/trunk/linux-gpib"
+GPIBPATH=$CURDIR/linux-gpib
 
 
 #
@@ -27,10 +25,11 @@ getgpibfirmware() {
 #
 # build gpib
 buildgpib() {
-  cd $CURDIR
-  rm -Rf $GPIBPATH
-  tar xvzf $GPIBVERSION.tar.gz
-  cd $GPIBPATH
+  cd ${CURDIR}
+  rm -Rf ${GPIBPATH}
+  svn co ${GPIBSVN} ${GPIBPATH}
+  cd ${GPIBPATH}
+  ./bootstrap
   #make distclean
   ./configure
   make
@@ -40,17 +39,7 @@ buildgpib() {
 #
 # build octave oct file
 buildoctfile() {
-  cd $CURDIR/../gpib_tb
-  $MKOCTFILE gpib_tb.cc $GPIBPATH/lib/.libs/*.o -I$GPIBPATH/include
-  #mkoctfile gpib_tb.cc -lgpib -I$GPIBPATH/include -L$GPIBPATH/lib/.libs
-  #cp $GPIBPATH/lib/.libs/libgpib.so.0 $CURDIR/../gpib_tb
-  #cp $GPIBPATH/lib/.libs/libgpib.so.0.1.3 $CURDIR/../gpib_tb
-  #
-  ln -sf gpib_tb.oct gpib_close.oct
-  ln -sf gpib_tb.oct gpib_init.oct
-  ln -sf gpib_tb.oct gpib_read.oct
-  ln -sf gpib_tb.oct gpib_settimeout.oct
-  ln -sf gpib_tb.oct gpib_write.oct
+  make
 }
 
 #
@@ -61,21 +50,19 @@ buildudev() {
   local HEXPATH=$( echo $FIRMWAREPATH | sed -e 's/\//\\\//g' )
   local GPIBAPATH=$( echo $GPIBPATH | sed -e 's/\//\\\//g' )
   echo $HEXLOADERPATH
-  cp -f ./41-gpib-permissions.rules.template ./permissions.temp
-  sed -i -e "s/__NIUSB_HEX__/$HEXPATH/g" ./permissions.temp
-  sed -i -e "s/__NIUSB_GPIB__/$GPIBAPATH/g" ./permissions.temp
+  cp -f ./41-gpib-permissions.rules.template ./41-gpib-permissions.rules
+  sed -i -e "s/__NIUSB_HEX__/$HEXPATH/g" ./41-gpib-permissions.rules
+  sed -i -e "s/__NIUSB_GPIB__/$GPIBAPATH/g" ./41-gpib-permissions.rules
   #exit
   #sudo cp -f ./permissions.temp /etc/udev/rules.d/41-gpib-permissions.rules
-  sudo cp -f ./permissions.temp /lib/udev/rules.d/41-gpib-permissions.rules
-  rm ./permissions.temp
-
-  sudo cp -f ./gpib.conf /etc/gpib.conf
+  echo sudo cp -f ./41-gpib-permissions.rules /lib/udev/rules.d/
+  echo sudo cp -f ./gpib.conf /etc/gpib.conf
   #sudo udevcontrol reload_rules
-  sudo service udev restart
-  sudo udevadm trigger
+  echo sudo service udev restart
+  echo sudo udevadm trigger
 }
 
-getgpibfirmware
-buildgpib
-buildoctfile
-#buildudev
+#getgpibfirmware
+#buildgpib
+#buildoctfile
+buildudev
