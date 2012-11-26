@@ -77,7 +77,7 @@ int octave_gpib::read(char *buf, unsigned int len)
     if (this->get_fd() < 0)
     {
         error("gpib_read: Interface must be opened first...");
-        return 0;
+        return -1;
     }
 
     int bytes_read = 0, read_retval = -1;
@@ -86,11 +86,10 @@ int octave_gpib::read(char *buf, unsigned int len)
 
     if ( !(gperr & CMPL) && !(gperr & TIMO) && !(gperr & END) ) {
         error("gpib_read: Error while reading: %d\n", gperr);
-        break;
+        return -1;
     }
-        
-	// ibcnt not threadsafe. same for other globals? i dont know?
-	bytes_read = ibcnt;
+
+	bytes_read = ThreadIbcnt();
 
     return bytes_read;
 
@@ -98,7 +97,23 @@ int octave_gpib::read(char *buf, unsigned int len)
 
 int octave_gpib::write(string str)
 {
-	return octave_gpib::write(str.c_str(),str.length());
+    if (this->get_fd() < 0)
+    {
+        error("gpib: Interface must be opened first...");
+        return -1;
+    }
+
+    int gperr;
+    
+    if ( (gperr = ibwrt(this->get_fd(),str.c_str(),str.length())) & ERR) {
+		// warning: can not write
+		if (ThreadIberr() != ENOL) {
+			// ENOL is handled by library
+			error("gpib: can not write gpib data to device");
+		}
+	}
+	
+	return gperr;
 }
 
 int octave_gpib::write(unsigned char *buf, int len)
@@ -113,7 +128,7 @@ int octave_gpib::write(unsigned char *buf, int len)
     
     if ( (gperr = ibwrt(this->get_fd(),buf,len)) & ERR) {
 		// warning: can not write
-		if (iberr != ENOL) {
+		if (ThreadIberr() != ENOL) {
 			// ENOL is handled by library
 			error("gpib: can not write gpib data to device");
 		}
@@ -124,17 +139,24 @@ int octave_gpib::write(unsigned char *buf, int len)
 
 int octave_gpib::set_timeout(int timeout)
 {
+	int gperr;
+
     if (this->get_fd() < 0)
     {
         error("gpib: Interface must be opened first...");
         return -1;
     }
 
-    if (timeout < -1 )
+    if (timeout < 0 || timeout > 17)
     {
-        error("gpib_timeout: timeout value must be -1 or positive");
+        error("gpib_timeout: timeout must be between 0 and 17");
         return -1;
     }
+
+	if ( (gperr = ibtmo(this->get_fd(),timeout)) & ERR) {
+		error("gpib_timeout: set gpib timeout failed");
+		return gperr;
+	}
 
     this->timeout = timeout;
 

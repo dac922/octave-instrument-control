@@ -29,11 +29,11 @@ static bool type_loaded = false;
 
 DEFUN_DLD (gpib, args, nargout, 
 "-*- texinfo -*-\n\
-@deftypefn {Loadable Function} {@var{gpib} = } gpib ([@var{id}], [@var{timeout}])\n \
+@deftypefn {Loadable Function} {@var{gpib} = } gpib ([@var{gpibid}], [@var{timeout}])\n \
 \n\
 Open gpib interface.\n \
 \n\
-@var{id} - the interface number. @*\
+@var{gpibid} - the interface number. @*\
 @var{timeout} - the interface timeout value. If omitted defaults to blocking call.\n \
 \n\
 The gpib() shall return instance of @var{octave_gpib} class as the result @var{gpib}.\n \
@@ -61,11 +61,12 @@ The gpib() shall return instance of @var{octave_gpib} class as the result @var{g
     int gpibid;
     int minor = 0;
     int timeout = -1;
+    int secid = 0;
     
     // Parse the function arguments
     if (args.length() > 0)
     {
-        if (args(0).is_integer_type() || args(0).is_float_type()))
+        if (args(0).is_integer_type() || args(0).is_float_type())
         {
 		    gpibid = args(0).int_value();
         }
@@ -97,7 +98,7 @@ The gpib() shall return instance of @var{octave_gpib} class as the result @var{g
     }
 
     // Open the interface
-    octave_gpib* retval = new octave_gpib(minor, id);
+    octave_gpib* retval = new octave_gpib(minor, gpibid, secid, timeout);
 
     if (retval->get_fd() < 0)
     {

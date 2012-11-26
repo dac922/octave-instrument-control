@@ -3,13 +3,17 @@ OBJ := gpib_class.o
 
 MKOCTFILE ?= mkoctfile
 
+GPIBPATH = /data/devel/octave/oic-toolbox/gpib_tb/linux-gpib-3.2.16
+CFLAGS = -I$(GPIBPATH)/include
+GPIBLIBS = $(GPIBPATH)/lib/.libs/*.o
+
 all: $(OBJ) $(OCT)
 
 %.o: %.cc
-	$(MKOCTFILE) -c $^
+	$(MKOCTFILE) $(CFLAGS) -c $^
 
 %.oct: %.o
-	$(MKOCTFILE) $^ $(OBJ) -o ../$@
+	$(MKOCTFILE) $^ $(OBJ) $(GPIBLIBS) -o ../$@
 
 clean:
 	rm -f *.oct *.o
