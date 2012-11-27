@@ -80,7 +80,7 @@ int octave_gpib::read(char *buf, unsigned int len)
     if (this->minor < 0)
     {
         error("gpib_read: Interface must be opened first...");
-        return -1;
+        return 0;
     }
     
     fd = ibdev(this->minor, this->gpibid, this->sad, this->timeout, this->send_eoi, this->eos_mode);
