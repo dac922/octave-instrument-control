@@ -33,12 +33,15 @@ class octave_gpib : public octave_base_value
 {
 public:
     octave_gpib();
-    octave_gpib(int, int, int, int);
+    octave_gpib(int, int, int, int, int, int);
+    ~octave_gpib();
 
     int write(string);
     int write(unsigned char*, int);
 
     int read(char *, unsigned int);
+
+    int close();
 
     int set_timeout(int);
     int get_timeout();
@@ -48,11 +51,11 @@ public:
     //int set_eos_mode(int);
 
     // Overloaded base functions
-    double gpib_value() const { return (double)this->fd; }
+    double gpib_value() const { return (double)this->gpibid; }
 
     virtual double scalar_value (bool frc_str_conv = false) const 
     {
-        return (double)this->fd;
+        return (double)this->gpibid;
     }
 
     void print (std::ostream& os, bool pr_as_read_syntax = false) const;
@@ -63,7 +66,7 @@ public:
     bool is_defined (void) const { return true;}
     bool print_as_scalar (void) const { return true;}
 
-   
+
 private:
 	
 

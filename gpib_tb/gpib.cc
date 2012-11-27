@@ -43,7 +43,7 @@ The gpib() shall return instance of @var{octave_gpib} class as the result @var{g
     error("gpib: Windows platform support is not yet implemented, go away...");
     return octave_value();
 #endif
-    
+
     if (!type_loaded)
     {
         octave_gpib::register_type();
@@ -56,13 +56,16 @@ The gpib() shall return instance of @var{octave_gpib} class as the result @var{g
         print_usage();
         return octave_value();
     }
-    
+
     // Default values
     int gpibid;
-    int minor = 0;
+    const int minor = 0;
     int timeout = -1;
-    int secid = 0;
-    
+    const int secid = 0;
+    const int send_eoi = 1;
+	const int eos_mode = 0;
+
+
     // Parse the function arguments
     if (args.length() > 0)
     {
@@ -98,15 +101,9 @@ The gpib() shall return instance of @var{octave_gpib} class as the result @var{g
     }
 
     // Open the interface
-    octave_gpib* retval = new octave_gpib(minor, gpibid, secid, timeout);
-
-    if (retval->get_fd() < 0)
-    {
-        error("gpib: Error opening the interface: %s\n", strerror(errno));
-        return octave_value();
-    }
-    
-    retval->set_timeout(timeout);
+    octave_gpib* retval = new octave_gpib(minor, gpibid, secid, timeout, send_eoi, eos_mode);
+   
+    //retval->set_timeout(timeout);
     //retval->set_sad(eot);
     //retval->set_send_eoi(eot);
     //retval->set_eos_mode(eot);

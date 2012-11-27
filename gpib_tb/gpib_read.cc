@@ -83,7 +83,7 @@ The gpib_read() shall return number of bytes successfully read in @var{count} as
     // Register custom interrupt signal handler
     octave_set_signal_handler(SIGINT, read_sighandler);
     read_interrupt = false;
-    
+
     // Read data
     int bytes_read = gpib->read(buffer, buffer_len);
 
