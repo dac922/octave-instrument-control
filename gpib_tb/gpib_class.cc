@@ -100,7 +100,13 @@ int octave_gpib::read(char *buf, unsigned int len)
 	    }
 	    else
 	    {
-            error("gpib_read 3: Error while reading: %d - %d\n", gperr, ThreadIberr());
+		    int localiberr = ThreadIberr();
+            error("gpib_read 3a: Error while reading: %d - %d\n", gperr, localiberr);
+            if (localiberr == 0)
+            {
+			    localiberr = ThreadIbcnt();
+				warning("gpib_read 3: failed system call: %d - %s\n", localiberr, strerror(localiberr));
+			}
             ibonl(fd,0);
             return -1;
         }
@@ -118,8 +124,8 @@ int octave_gpib::read(char *buf, unsigned int len)
 
     while (!read_interrupt) 
     {
-        gperr = ibwait(fd,0xffff);
-        
+        gperr = ibwait(fd,CMPL);
+        warning("gpib_read 1a: read timeout %d - %d - %d",gperr, ThreadIberr(),ThreadIbcnt());
         if (gperr & ERR)
         {
 		    if (gperr & TIMO)
@@ -128,7 +134,13 @@ int octave_gpib::read(char *buf, unsigned int len)
 		    }
 		    else
 		    {
-                error("gpib_read 3: Error while reading: %d - %d\n", gperr, ThreadIberr());
+				int localiberr = ThreadIberr();
+                error("gpib_read 3a: Error while reading: %d - %d\n", gperr, localiberr);
+                if (localiberr == 0)
+                {
+					localiberr = ThreadIbcnt();
+					warning("gpib_read 3: failed system call: %d - %s\n", localiberr, strerror(localiberr));
+				}
                 ibonl(fd,0);
                 return -1;
             }
