@@ -1,0 +1,32 @@
+Summary of important user-visible changes for octave-instrument-control-toolbox 0.0.0:
+-------------------------------------------------------------------
+
+ ** Initial release
+
+ ** Support for TCP interface I/O
+
+ ** Support for USBTMC interface I/O
+
+ ** Support for GPIB interface I/O
+
+ ** The following functions are new:
+        tcp
+        tcp_read
+        tcp_write
+        tcp_timeout
+        tcp_close
+        usbtmc
+        usbtmc_read
+        usbtmc_write
+        usbtmc_close
+        gpib
+        gpib_read
+        gpib_write
+        gpib_timeout
+        gpib_close
+
+ ** octave-instrument-control-toolbox is intended as test release and
+    playground for new low level I/O functions. If stable enough, the
+    functions will be included to octave-forge's instrument-control,
+    hopefully.
+
