@@ -1,4 +1,4 @@
-octave-instrument-control-toolbox >> Low level I/O functions
+octave-instrument-control >> Low level I/O functions
 TCP
   tcp
   tcp_read
