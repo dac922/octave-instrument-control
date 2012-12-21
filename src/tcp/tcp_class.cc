@@ -19,21 +19,23 @@
 #include <string>
 #include <algorithm>
 
-#if 1
-#include <stdlib.h>
+#ifndef __WIN32__
+#include <unistd.h>
+#include <errno.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
 #include <netdb.h>
 #include <arpa/inet.h>
+#else
+#include <winsock2.h>
 #endif
 
 #ifndef __WIN32__
-#include <stdio.h>
-#include <string.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <termios.h>
-#include <unistd.h>
+#define SOCKETERR errno
+#define STRSOCKETERR strerror(errno)
+#else
+#define SOCKETERR WSAGetLastError()
+#define STRSOCKETERR ""
 #endif
 
 using std::string;
@@ -54,7 +56,21 @@ octave_tcp::octave_tcp(string address, int port)
 {
     struct sockaddr_in sin;
     int sockerr;
-    
+
+#ifdef __WIN32__
+    WORD wVersionRequested;
+    WSADATA wsaData;
+    int err;
+
+    wVersionRequested = MAKEWORD( 2, 2 );
+    err = WSAStartup( wVersionRequested, &wsaData );
+    if ( err != 0 )
+    {
+      error( "could not initialize winsock library" );
+      return octave_value();
+    }
+#endif    
+
     sin.sin_addr.s_addr = inet_addr(address.c_str());
     sin.sin_family = AF_INET;
     sin.sin_port = htons(port);
@@ -63,7 +79,7 @@ octave_tcp::octave_tcp(string address, int port)
     this->fd = socket(AF_INET, SOCK_STREAM,0);
     if (this->fd < 0)
     {
-        error("tcp: error opening socket : %s\n", strerror(errno));
+        error("tcp: error opening socket : %d - %s\n", SOCKETERR, STRSOCKETERR);
         octave_tcp::close();
         return;
     }
@@ -71,7 +87,7 @@ octave_tcp::octave_tcp(string address, int port)
     sockerr = connect(this->fd,(struct sockaddr*)&sin, sizeof(struct sockaddr));
     if (sockerr < 0)
     {
-        error("tcp: error on connect : %s\n", strerror(errno));
+        error("tcp: error on connect : %d - %s\n", SOCKETERR, STRSOCKETERR);
         octave_tcp::close();
         return;
     }
@@ -130,7 +146,7 @@ int octave_tcp::read(char *buf, unsigned int len, int timeout)
         FD_SET(this->get_fd(),&readfds);
         if (::select(this->get_fd()+1,&readfds,NULL,NULL,ptv) < 0)
         {
-            error("tcp_read: Error while reading/select: %s\n", strerror(errno));
+            error("tcp_read: Error while reading/select: %d - %s\n", SOCKETERR, STRSOCKETERR);
             break;
         }
         
@@ -139,7 +155,7 @@ int octave_tcp::read(char *buf, unsigned int len, int timeout)
             read_retval = ::recv(get_fd(),(void *)(buf + bytes_read),len - bytes_read,0);
             if (read_retval < 0)
             {
-                error("tcp_read: Error while reading: %s\n", strerror(errno));
+                error("tcp_read: Error while reading: %d - %s\n", SOCKETERR, STRSOCKETERR);
                 break;
             }
         } else {
@@ -217,7 +233,11 @@ int octave_tcp::close()
     
     if (this->get_fd() > 0)
     {
+#ifndef __WIN32__
         retval = ::close(this->get_fd());
+#else
+        retval = ::closesocket(this->get_fd());
+#endif
         this->fd = -1;
     }
 

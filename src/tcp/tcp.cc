@@ -18,11 +18,6 @@
 
 #include <octave/oct.h>
 
-#ifndef __WIN32__
-#include <errno.h>
-#include <fcntl.h>
-#endif
-
 #include "tcp_class.h"
 
 static bool type_loaded = false;
@@ -40,11 +35,7 @@ Open tcp interface.\n \
 The tcp() shall return instance of @var{octave_tcp} class as the result @var{tcp}.\n \
 @end deftypefn")
 {
-#ifdef __WIN32__
-    error("tcp: Windows platform support is not yet implemented, go away...");
-    return octave_value();
-#endif
-    
+
     if (!type_loaded)
     {
         octave_tcp::register_type();
@@ -111,7 +102,6 @@ The tcp() shall return instance of @var{octave_tcp} class as the result @var{tcp
 
     if (retval->get_fd() < 0)
     {
-        error("tcp: Error opening the interface: %s\n", strerror(errno));
         return octave_value();
     }
     

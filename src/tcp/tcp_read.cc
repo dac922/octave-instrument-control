@@ -17,9 +17,7 @@
 #include <octave/uint8NDArray.h>
 #include <octave/sighandlers.h>
 
-#ifndef __WIN32__
 #include <errno.h>
-#endif
 
 #include "tcp_class.h"
 
