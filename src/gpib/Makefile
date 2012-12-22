@@ -3,7 +3,7 @@ OBJ := gpib_class.o
 
 MKOCTFILE ?= mkoctfile
 
-GPIBLIBS = -lgpib
+GPIBLIBS ?= -lgpib
 
 all: $(OBJ) $(OCT)
 
