@@ -52,7 +52,7 @@ octave_tcp::octave_tcp()
     this->fd = -1;
 }
 
-octave_tcp::octave_tcp(string address, int port)
+int octave_tcp::open(string address, int port)
 {
     struct sockaddr_in sin;
     int sockerr;
@@ -81,7 +81,7 @@ octave_tcp::octave_tcp(string address, int port)
     {
         error("tcp: error opening socket : %d - %s\n", SOCKETERR, STRSOCKETERR);
         octave_tcp::close();
-        return;
+        return -1;
     }
     
     sockerr = connect(this->fd,(struct sockaddr*)&sin, sizeof(struct sockaddr));
@@ -89,8 +89,9 @@ octave_tcp::octave_tcp(string address, int port)
     {
         error("tcp: error on connect : %d - %s\n", SOCKETERR, STRSOCKETERR);
         octave_tcp::close();
-        return;
+        return -1;
     }
+    return this->get_fd();
 }
 
 octave_tcp::~octave_tcp()
@@ -109,7 +110,7 @@ void octave_tcp::print_raw (std::ostream& os, bool pr_as_read_syntax) const
     os << this->fd;
 }
 
-int octave_tcp::read(char *buf, unsigned int len, int timeout)
+int octave_tcp::read(uint8_t *buf, unsigned int len, int timeout)
 {
     
     struct timeval tv;
@@ -191,7 +192,7 @@ int octave_tcp::write(string str)
     return ::send(get_fd(),str.c_str(),str.length(),0);
 }
 
-int octave_tcp::write(unsigned char *buf, int len)
+int octave_tcp::write(uint8_t *buf, unsigned int len)
 {
     if (this->get_fd() < 0)
     {
@@ -226,11 +227,15 @@ int octave_tcp::get_timeout()
     return this->timeout;
 }
 
+int octave_tcp::get_fd()
+{
+    return this->fd;
+}
 
 int octave_tcp::close()
 {
     int retval = -1;
-    
+
     if (this->get_fd() > 0)
     {
 #ifndef __WIN32__

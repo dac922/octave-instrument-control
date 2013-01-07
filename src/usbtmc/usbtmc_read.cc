@@ -16,12 +16,14 @@
 #include <octave/oct.h>
 #include <octave/uint8NDArray.h>
 
+#include <errno.h>
+
 #include "usbtmc_class.h"
 
 static bool type_loaded = false;
 
 DEFUN_DLD (usbtmc_read, args, nargout, 
-"-*- texinfo -*-\n\
+        "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {[@var{data}, @var{count}] = } usbtmc_read (@var{usbtmc}, @var{n})\n \
 \n\
 Read from usbtmc slave device.\n \
@@ -45,7 +47,7 @@ The usbtmc_read() shall return number of bytes successfully read in @var{count} 
         return octave_value(-1);
     }
 
-    char *buffer = NULL;
+    uint8_t *buffer = NULL;
     unsigned int buffer_len = 1;
 
     if (args.length() > 1)
@@ -59,11 +61,11 @@ The usbtmc_read() shall return number of bytes successfully read in @var{count} 
         buffer_len = args(1).int_value();
     }
 
-    buffer = new char [buffer_len + 1];
+    buffer = new uint8_t [buffer_len + 1];
 
     if (buffer == NULL)
     {
-        error("usbtmc_read: cannot allocate requested memory...");
+        error("usbtmc_read: cannot allocate requested memory: %s\n", strerror(errno));
         return octave_value(-1);  
     }
 

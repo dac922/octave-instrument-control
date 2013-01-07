@@ -16,10 +16,10 @@ MKOCTFILE ?= mkoctfile
 .PHONY: distclean
 
 all:
-	@for dir in $(SUBDIRS); do $(MAKE) -C $$dir; done
+	@for dir in $(SUBDIRS); do $(MAKE) -i -C $$dir; done
 	
 clean:
-	 @for dir in $(SUBDIRS); do $(MAKE) -C $$dir clean; done
+	 @for dir in $(SUBDIRS); do $(MAKE) -i -C $$dir clean; done
 
 realclean: clean
 	 rm -f *.oct

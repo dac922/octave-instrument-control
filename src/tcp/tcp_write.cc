@@ -20,7 +20,7 @@
 static bool type_loaded = false;
 
 DEFUN_DLD (tcp_write, args, nargout, 
-"-*- texinfo -*-\n\
+        "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{n} = } tcp_write (@var{tcp}, @var{data})\n \
 \n\
 Write data to a tcp interface.\n \
@@ -36,14 +36,14 @@ Upon successful completion, tcp_write() shall return the number of bytes written
         octave_tcp::register_type();
         type_loaded = true;
     }
-    
+
     if (args.length() != 2 || args(0).type_id() != octave_tcp::static_type_id())
     {
         print_usage();
         return octave_value(-1);
     }
 
-    octave_tcp* tcp = NULL;
+    octave_tcp *tcp = NULL;
     int retval;
 
     const octave_base_value& rep = args(0).get_rep();
@@ -56,14 +56,21 @@ Upon successful completion, tcp_write() shall return the number of bytes written
     else if (args(1).byte_size() == args(1).numel()) // uint8_t
     {
         NDArray data = args(1).array_value();
-        unsigned char* buf = new unsigned char[data.length()];
+        uint8_t *buf = NULL;
+        buf = new uint8_t[data.length()];
         
         // memcpy?
+        if (buf == NULL)
+        {
+            error("tcp_write: cannot allocate requested memory");
+            return octave_value(-1);
+        }
+        
         for (int i = 0; i < data.length(); i++)
-            buf[i] = (unsigned char)data(i);
-        
+            buf[i] = static_cast<uint8_t>(data(i));
+
         retval = tcp->write(buf, data.length());
-        
+
         delete[] buf;
     }
     else

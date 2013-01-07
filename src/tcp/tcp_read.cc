@@ -74,8 +74,8 @@ The tcp_read() shall return number of bytes successfully read in @var{count} as 
 
     buffer_len = args(1).int_value();
     
-    char *buffer = NULL;
-    buffer = new char[buffer_len + 1];
+    uint8_t *buffer = NULL;
+    buffer = new uint8_t[buffer_len + 1];
 
     if (buffer == NULL)
     {

@@ -15,12 +15,14 @@
 
 #include <octave/oct.h>
 
+#include <errno.h>
+
 #include "gpib_class.h"
 
 static bool type_loaded = false;
 
 DEFUN_DLD (gpib_write, args, nargout, 
-"-*- texinfo -*-\n\
+        "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{n} = } gpib_write (@var{gpib}, @var{data})\n \
 \n\
 Write data to a gpib interface.\n \
@@ -56,11 +58,17 @@ Upon successful completion, gpib_write() shall return the number of bytes writte
     else if (args(1).byte_size() == args(1).numel()) // uint8_t
     {
         NDArray data = args(1).array_value();
-        unsigned char* buf = new unsigned char[data.length()];
+        uint8_t* buf = NULL;
+        buf = new uint8_t[data.length()];
         
-        // memcpy?
+        if (buf == NULL)
+        {
+            error("gpib_write: cannot allocate requested memory: %s\n", strerror(errno));
+            return octave_value(-1);  
+        }
+        
         for (int i = 0; i < data.length(); i++)
-            buf[i] = (unsigned char)data(i);
+            buf[i] = static_cast<uint8_t>(data(i));
         
         retval = gpib->write(buf, data.length());
         

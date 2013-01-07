@@ -18,10 +18,8 @@
 
 #include <octave/oct.h>
 
-#ifndef __WIN32__
 #include <errno.h>
 #include <fcntl.h>
-#endif
 
 #include "gpib_class.h"
 
@@ -39,10 +37,6 @@ Open gpib interface.\n \
 The gpib() shall return instance of @var{octave_gpib} class as the result @var{gpib}.\n \
 @end deftypefn")
 {
-#ifdef __WIN32__
-    error("gpib: Windows platform support is not yet implemented, go away...");
-    return octave_value();
-#endif
 
     if (!type_loaded)
     {
@@ -101,7 +95,9 @@ The gpib() shall return instance of @var{octave_gpib} class as the result @var{g
     }
 
     // Open the interface
-    octave_gpib* retval = new octave_gpib(minor, gpibid, secid, timeout, send_eoi, eos_mode);
+    octave_gpib* retval = new octave_gpib();
+    
+    retval->open(minor, gpibid, secid, timeout, send_eoi, eos_mode);
    
     //retval->set_timeout(timeout);
     //retval->set_sad(eot);

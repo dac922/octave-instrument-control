@@ -23,7 +23,7 @@
 static bool type_loaded = false;
 
 DEFUN_DLD (tcp, args, nargout, 
-"-*- texinfo -*-\n\
+        "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{tcp} = } tcp ([@var{ipaddress}], [@var{port}], [@var{timeout}])\n \
 \n\
 Open tcp interface.\n \
@@ -48,12 +48,12 @@ The tcp() shall return instance of @var{octave_tcp} class as the result @var{tcp
         print_usage();
         return octave_value();
     }
-    
+
     // Default values
     string address("127.0.0.1");
     int port = 23;
     int timeout = -1;
-    
+
     // Parse the function arguments
     if (args.length() > 0)
     {
@@ -98,16 +98,16 @@ The tcp() shall return instance of @var{octave_tcp} class as the result @var{tcp
     }
 
     // Open the interface and connect
-    octave_tcp* retval = new octave_tcp(address, port);
+    octave_tcp* retval = new octave_tcp();
 
-    if (retval->get_fd() < 0)
+    if (retval->open(address, port) < 0)
     {
         return octave_value();
     }
-    
+
     retval->set_timeout(timeout);
-    
+
     //retval->flush(2);
-    
+
     return octave_value(retval);
 }

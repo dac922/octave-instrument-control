@@ -33,14 +33,14 @@ class octave_gpib : public octave_base_value
 {
 public:
     octave_gpib();
-    octave_gpib(int, int, int, int, int, int);
     ~octave_gpib();
 
     int write(string);
-    int write(unsigned char*, int);
+    int write(uint8_t*, unsigned int);
 
-    int read(char *, unsigned int);
+    int read(uint8_t*, unsigned int);
 
+    int open(int, int, int, int, int, int);
     int close();
 
     int set_timeout(int);
@@ -68,14 +68,12 @@ public:
 
 
 private:
-	
-
-	int minor;
-	int gpibid;
-	int sad;
-	int timeout;
-	int send_eoi;
-	int eos_mode;
+    int minor;
+    int gpibid;
+    int sad;
+    int timeout;
+    int send_eoi;
+    int eos_mode;
 
     DECLARE_OCTAVE_ALLOCATOR
     DECLARE_OV_TYPEID_FUNCTIONS_AND_DATA

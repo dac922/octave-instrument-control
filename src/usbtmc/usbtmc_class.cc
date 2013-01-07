@@ -19,12 +19,11 @@
 #include <stdlib.h>
 #include <string>
 
-#ifndef __WIN32__
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <sys/ioctl.h>
-#endif
+
 
 using std::string;
 
@@ -36,11 +35,6 @@ DEFINE_OV_TYPEID_FUNCTIONS_AND_DATA (octave_usbtmc, "octave_usbtmc", "octave_usb
 octave_usbtmc::octave_usbtmc()
 {
     this->fd = -1;
-}
-
-octave_usbtmc::octave_usbtmc(string path, int flags)
-{
-    this->fd = open(path.c_str(), flags, 0);
 }
 
 octave_usbtmc::~octave_usbtmc()
@@ -64,7 +58,20 @@ void octave_usbtmc::print_raw (std::ostream& os, bool pr_as_read_syntax) const
     os << this->fd;
 }
 
-int octave_usbtmc::read(char *buf, unsigned int len)
+int octave_usbtmc::open(string path, int flags)
+{
+    this->fd = ::open(path.c_str(), flags, 0);
+
+    if (this->get_fd() < 0)
+    {
+        error("usbtmc: Error opening the interface: %s\n", strerror(errno));
+        return -1;
+    }
+
+    return this->get_fd();
+}
+
+int octave_usbtmc::read(uint8_t *buf, unsigned int len)
 {   
     if (this->get_fd() < 0)
     {
@@ -80,7 +87,7 @@ int octave_usbtmc::read(char *buf, unsigned int len)
     return retval;
 }
 
-int octave_usbtmc::write(unsigned char *buf, int len)
+int octave_usbtmc::write(uint8_t *buf, unsigned int len)
 {
     if (this->get_fd() < 0)
     {

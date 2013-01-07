@@ -74,14 +74,11 @@ The usbtmc() shall return instance of @var{octave_usbtmc} class as the result @v
 
     }
 
-    // Open the interface
-    octave_usbtmc* retval = new octave_usbtmc(path, oflags);
+    octave_usbtmc* retval = new octave_usbtmc();
 
-    if (retval->get_fd() < 0)
-    {
-        error("usbtmc: Error opening the interface: %s\n", strerror(errno));
+    // Open the interface
+    if (retval->open(path, oflags) < 0)
         return octave_value();
-    }
 
     return octave_value(retval);
 }

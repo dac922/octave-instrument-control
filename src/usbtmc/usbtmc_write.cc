@@ -15,18 +15,20 @@
 
 #include <octave/oct.h>
 
+#include <errno.h>
+
 #include "usbtmc_class.h"
 
 static bool type_loaded = false;
 
 DEFUN_DLD (usbtmc_write, args, nargout, 
-"-*- texinfo -*-\n\
+        "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{n} = } usbtmc_write (@var{usbtmc}, @var{data})\n \
 \n\
 Write data to a usbtmc slave device.\n \
 \n\
 @var{usbtmc} - instance of @var{octave_usbtmc} class.@*\
-@var{data} - data to be written to the slave device. Can be either of String or uint8 type.\n \
+@var{data} - data, of type uint8, to be written to the slave device.\n \
 \n\
 Upon successful completion, usbtmc_write() shall return the number of bytes written as the result @var{n}.\n \
 @end deftypefn")
@@ -37,7 +39,6 @@ Upon successful completion, usbtmc_write() shall return the number of bytes writ
         type_loaded = true;
     }
 
-    
     if (args.length() != 2 || args(0).type_id() != octave_usbtmc::static_type_id()) 
     {
         print_usage();
@@ -45,27 +46,34 @@ Upon successful completion, usbtmc_write() shall return the number of bytes writ
     }
     
     octave_usbtmc* usbtmc = NULL;
-
+    int retval;
+    
     const octave_base_value& rep = args(0).get_rep();
     usbtmc = &((octave_usbtmc &)rep);
 
     const octave_base_value& data = args(1).get_rep();
-    int retval;
     
     if (data.is_string())
     {
         string buf = data.string_value();
-        retval = usbtmc->write((unsigned char*)buf.c_str(), buf.length());
+        retval = usbtmc->write((uint8_t*)buf.c_str(), buf.length());
     }
     else if (data.byte_size() == data.numel())
     {
         NDArray dtmp = data.array_value();
-        unsigned char* buf = new unsigned char [dtmp.length()];
+        uint8_t *buf = NULL;
+        buf = new uint8_t[dtmp.length()];
+
+        if (buf == NULL)
+        {
+            error("usbtmc_write: cannot allocate requested memory: %s\n", strerror(errno));
+            return octave_value(-1);  
+        }
         
         for (int i = 0; i < dtmp.length(); i++)
-            buf[i] = (unsigned char)dtmp(i);
+            buf[i] = static_cast<uint8_t>(dtmp(i));
         
-        retval = usbtmc->write(buf, data.byte_size());
+        retval = usbtmc->write(buf, dtmp.length());
         
         delete[] buf;
     }

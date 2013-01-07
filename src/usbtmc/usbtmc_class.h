@@ -26,17 +26,17 @@ class octave_usbtmc : public octave_base_value
 {
 public:
     octave_usbtmc();
-    octave_usbtmc(string, int);
     ~octave_usbtmc();
 
-    int get_fd();
+    int open(string, int);
     int close();
+    int get_fd();
 
     // Simple usbtmc commands
-    int write(unsigned char*, int);
-    int read(char*, unsigned int);
-    
-    
+    int write(uint8_t*, unsigned int);
+    int read(uint8_t*, unsigned int);
+
+
     // Overloaded base functions
     double usbtmc_value() const
     {

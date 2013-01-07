@@ -33,20 +33,19 @@ class octave_tcp : public octave_base_value
 {
 public:
     octave_tcp();
-    octave_tcp(string, int);
     ~octave_tcp();
 
     int write(string);
-    int write(unsigned char*, int);
+    int write(uint8_t *, unsigned int);
 
-    int read(char *, unsigned int, int);
+    int read(uint8_t *, unsigned int, int);
 
+    int open(string, int);
     int close();
+    int get_fd();
 
     int set_timeout(int);
     int get_timeout();
-   
-    int get_fd() { return this->fd; }
 
     // Overloaded base functions
     double tcp_value() const { return (double)this->fd; }
@@ -64,7 +63,7 @@ public:
     bool is_defined (void) const { return true;}
     bool print_as_scalar (void) const { return true;}
 
-   
+
 private:
 	int fd;
 	int timeout;

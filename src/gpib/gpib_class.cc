@@ -19,8 +19,6 @@
 #include <string>
 #include <algorithm>
 
-
-#ifndef __WIN32__
 #include <stdio.h>
 #include <string.h>
 #include <fcntl.h>
@@ -28,7 +26,6 @@
 #include <termios.h>
 #include <unistd.h>
 #include "gpib/ib.h"
-#endif
 
 #define GPIB_USEBLOCKREAD
 
@@ -44,16 +41,6 @@ DEFINE_OV_TYPEID_FUNCTIONS_AND_DATA (octave_gpib, "octave_gpib", "octave_gpib");
 octave_gpib::octave_gpib()
 {
     this->minor = -1;
-}
-
-octave_gpib::octave_gpib(int minor, int gpibid, int sad, int timeout, int send_eoi, int eos_mode)
-{
-    this->minor = minor;
-    this->gpibid = gpibid;
-    this->sad = sad;
-    this->timeout = timeout;
-    this->send_eoi = send_eoi;
-    this->eos_mode = eos_mode;
 }
 
 octave_gpib::~octave_gpib()
@@ -72,7 +59,19 @@ void octave_gpib::print_raw (std::ostream& os, bool pr_as_read_syntax) const
     os << this->gpibid;
 }
 
-int octave_gpib::read(char *buf, unsigned int len)
+int octave_gpib::open(int minor, int gpibid, int sad, int timeout, int send_eoi, int eos_mode)
+{
+    this->minor = minor;
+    this->gpibid = gpibid;
+    this->sad = sad;
+    this->timeout = timeout;
+    this->send_eoi = send_eoi;
+    this->eos_mode = eos_mode;
+    
+    return 1;
+}
+
+int octave_gpib::read(uint8_t *buf, unsigned int len)
 {
     int gperr,fd;
     int bytes_read = 0, read_retval = -1;
@@ -80,7 +79,7 @@ int octave_gpib::read(char *buf, unsigned int len)
     if (this->minor < 0)
     {
         error("gpib_read: Interface must be opened first...");
-        return 0;
+        return -1;
     }
     
     fd = ibdev(this->minor, this->gpibid, this->sad, this->timeout, this->send_eoi, this->eos_mode);
@@ -94,19 +93,19 @@ int octave_gpib::read(char *buf, unsigned int len)
     gperr = ibrd(fd,(void *)buf,len);
     if (gperr & ERR)
     {
-	    if (gperr & TIMO)
-	    {
-	        warning("gpib_read 2: read timeout");
-	    }
-	    else
-	    {
-		    int localiberr = ThreadIberr();
+        if (gperr & TIMO)
+        {
+            warning("gpib_read 2: read timeout");
+        }
+        else
+        {
+            int localiberr = ThreadIberr();
             error("gpib_read 3a: Error while reading: %d - %d\n", gperr, localiberr);
             if (localiberr == 0)
             {
-			    localiberr = ThreadIbcnt();
-				warning("gpib_read 3: failed system call: %d - %s\n", localiberr, strerror(localiberr));
-			}
+                localiberr = ThreadIbcnt();
+                warning("gpib_read 3: failed system call: %d - %s\n", localiberr, strerror(localiberr));
+            }
             ibonl(fd,0);
             return -1;
         }
@@ -128,19 +127,19 @@ int octave_gpib::read(char *buf, unsigned int len)
         warning("gpib_read 1a: read timeout %d - %d - %d",gperr, ThreadIberr(),ThreadIbcnt());
         if (gperr & ERR)
         {
-		    if (gperr & TIMO)
-		    {
-		        warning("gpib_read 2: read timeout");
-		    }
-		    else
-		    {
-				int localiberr = ThreadIberr();
+            if (gperr & TIMO)
+            {
+                warning("gpib_read 2: read timeout");
+            }
+            else
+            {
+                int localiberr = ThreadIberr();
                 error("gpib_read 3a: Error while reading: %d - %d\n", gperr, localiberr);
                 if (localiberr == 0)
                 {
-					localiberr = ThreadIbcnt();
-					warning("gpib_read 3: failed system call: %d - %s\n", localiberr, strerror(localiberr));
-				}
+                    localiberr = ThreadIbcnt();
+                    warning("gpib_read 3: failed system call: %d - %s\n", localiberr, strerror(localiberr));
+                }
                 ibonl(fd,0);
                 return -1;
             }
@@ -172,7 +171,7 @@ int octave_gpib::write(string str)
         error("gpib_read: error opening gpib device...");
         return -1;
     }
-
+    
     gperr = ibwrt(fd,str.c_str(),str.length());
     if (gperr & ERR) {
         // warning: can not write
@@ -184,10 +183,10 @@ int octave_gpib::write(string str)
     
     ibonl(fd,0);
     
-    return gperr;
+    return gperr; 
 }
 
-int octave_gpib::write(unsigned char *buf, int len)
+int octave_gpib::write(uint8_t *buf, unsigned int len)
 {
     int gperr,fd;
     
@@ -220,7 +219,7 @@ int octave_gpib::write(unsigned char *buf, int len)
 
 int octave_gpib::set_timeout(int timeout)
 {
-	if (this->minor < 0)
+    if (this->minor < 0)
     {
         error("gpib_timeout: Interface must be opened first...");
         return -1;
@@ -244,12 +243,11 @@ int octave_gpib::get_timeout()
 
 int octave_gpib::close()
 {
-	int fd,gperr;
+    int fd,gperr;
 	
-	if (this->minor > -1)
-	{
-	
-	    fd = ibdev(this->minor, this->gpibid, this->sad, this->timeout, this->send_eoi, this->eos_mode);
+    if (this->minor > -1)
+    {
+        fd = ibdev(this->minor, this->gpibid, this->sad, this->timeout, this->send_eoi, this->eos_mode);
         if (fd < 0)
         {
             error("gpib_close: error opening gpib device...");
@@ -266,10 +264,10 @@ int octave_gpib::close()
         if (gperr & ERR) {
             error("gpib_close: can not set device to local");
         }
-    
+
         ibonl(fd,0);
     }
-    
+
     this->minor = -1;
     return -1;
 }
