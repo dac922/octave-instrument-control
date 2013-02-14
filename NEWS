@@ -9,6 +9,8 @@ Summary of important user-visible changes for octave-instrument-control 0.0.0:
 
  ** Support for GPIB interface I/O
 
+ ** Support for VXI11 interface I/O
+
  ** The following functions are new:
         tcp
         tcp_read
@@ -24,6 +26,11 @@ Summary of important user-visible changes for octave-instrument-control 0.0.0:
         gpib_write
         gpib_timeout
         gpib_close
+        vxi11
+        vxi11_read
+        vxi11_write
+        vxi11_close
+
 
  ** octave-instrument-control is intended as test release and
     playground for new low level I/O functions. If stable enough, the

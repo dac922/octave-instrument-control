@@ -16,3 +16,9 @@ GPIB
   gpib_write
   gpib_timeout
   gpib_close
+VXI11
+  vxi11
+  vxi11_read
+  vxi11_write
+  vxi11_close
+
