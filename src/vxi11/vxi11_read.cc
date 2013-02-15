@@ -81,7 +81,7 @@ The vxi11_read() shall return number of bytes successfully read in @var{count} a
     uint8NDArray data( dim_vector(1, (retval > 0) ? retval : 0) );
     
     for (int i = 0; i < retval; i++)
-        data(i) = buffer[i];
+        data(i) = static_cast<uint8_t>(buffer[i]);
 
     return_list(0) = data;
     return_list(1) = retval; 
