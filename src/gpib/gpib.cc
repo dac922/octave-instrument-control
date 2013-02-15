@@ -1,3 +1,4 @@
+// Copyright (C) 2013   Stefan Mahr     <dac922@gmx.de>
 // Copyright (C) 2012   Andrius Sutas   <andrius.sutas@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
@@ -12,9 +13,6 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
-
-// TODO: Implement Flow Control
-// TODO: Implement H/W handshaking
 
 #include <octave/oct.h>
 
