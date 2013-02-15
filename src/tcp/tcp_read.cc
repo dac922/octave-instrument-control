@@ -49,7 +49,7 @@ The tcp_read() shall return number of bytes successfully read in @var{count} as 
         octave_tcp::register_type();
         type_loaded = true;
     }
-    
+
     if (args.length() < 2 || args.length() > 3 || args(0).type_id() != octave_tcp::static_type_id())
     {
         print_usage();
@@ -74,21 +74,21 @@ The tcp_read() shall return number of bytes successfully read in @var{count} as 
     }
 
     buffer_len = args(1).int_value();
-    
+
     uint8_t *buffer = NULL;
     buffer = new uint8_t[buffer_len + 1];
 
     if (buffer == NULL)
     {
         error("tcp_read: cannot allocate requested memory: %s\n", strerror(errno));
-        return octave_value(-1);  
+        return octave_value(-1);
     }
 
     octave_tcp* tcp = NULL;
 
     const octave_base_value& rep = args(0).get_rep();
     tcp = &((octave_tcp &)rep);
-    
+
     int timeout = tcp->get_timeout();
     if (args.length() == 3)
     {
@@ -98,14 +98,14 @@ The tcp_read() shall return number of bytes successfully read in @var{count} as 
     // Register custom interrupt signal handler
     octave_set_signal_handler(SIGINT, read_sighandler);
     read_interrupt = false;
-    
+
     // Read data
     int bytes_read = tcp->read(buffer, buffer_len, timeout);
 
     // Restore default signal handling
     // TODO: a better way? 
     install_signal_handlers();
-    
+
     // Convert data to octave type variables
     octave_value_list return_list;
     uint8NDArray data( dim_vector(1, bytes_read) );

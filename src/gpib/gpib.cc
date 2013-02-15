@@ -55,7 +55,7 @@ The gpib() shall return instance of @var{octave_gpib} class as the result @var{g
     int timeout = -1;
     const int secid = 0;
     const int send_eoi = 1;
-	const int eos_mode = 0;
+    const int eos_mode = 0;
 
 
     // Parse the function arguments
@@ -63,11 +63,11 @@ The gpib() shall return instance of @var{octave_gpib} class as the result @var{g
     {
         if (args(0).is_integer_type() || args(0).is_float_type())
         {
-		    gpibid = args(0).int_value();
+            gpibid = args(0).int_value();
         }
         else
         {
-			print_usage();
+            print_usage();
             return octave_value();
         }
     }
@@ -94,13 +94,13 @@ The gpib() shall return instance of @var{octave_gpib} class as the result @var{g
 
     // Open the interface
     octave_gpib* retval = new octave_gpib();
-    
+
     retval->open(minor, gpibid, secid, timeout, send_eoi, eos_mode);
-   
+
     //retval->set_timeout(timeout);
     //retval->set_sad(eot);
     //retval->set_send_eoi(eot);
     //retval->set_eos_mode(eot);
-    
+
     return octave_value(retval);
 }

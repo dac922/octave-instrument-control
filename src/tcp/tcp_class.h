@@ -25,11 +25,6 @@
 
 using std::string;
 
-#define BITMASK_SET(x,y) ((x) |= (y))
-#define BITMASK_CLEAR(x,y) ((x) &= (~(y)))
-#define BITMASK_TOGGLE(x,y) ((x) ^= (y))
-#define BITMASK_CHECK(x,y) ((x) & (y))
-
 class octave_tcp : public octave_base_value 
 {
 public:
@@ -66,8 +61,8 @@ public:
 
 
 private:
-	int fd;
-	int timeout;
+    int fd;
+    int timeout;
 
     DECLARE_OCTAVE_ALLOCATOR
     DECLARE_OV_TYPEID_FUNCTIONS_AND_DATA

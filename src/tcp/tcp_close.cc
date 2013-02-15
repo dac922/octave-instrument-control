@@ -34,13 +34,13 @@ Close the interface and release a file descriptor.\n \
         octave_tcp::register_type();
         type_loaded = true;
     }
-    
+
     if (args.length() != 1 || args(0).type_id() != octave_tcp::static_type_id())
     {
         print_usage();
         return octave_value(-1);
     }
-    
+
     octave_tcp* tcp = NULL;
 
     const octave_base_value& rep = args(0).get_rep();

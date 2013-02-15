@@ -38,7 +38,7 @@ If @var{timeout} parameter is omitted, the tcp_timeout() shall return current ti
         octave_tcp::register_type();
         type_loaded = true;
     }
-    
+
     if (args.length() < 1 || args.length() > 2 || args(0).type_id() != octave_tcp::static_type_id())
     {
         print_usage();

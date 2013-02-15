@@ -59,14 +59,14 @@ Upon successful completion, tcp_write() shall return the number of bytes written
         NDArray data = args(1).array_value();
         uint8_t *buf = NULL;
         buf = new uint8_t[data.length()];
-        
+
         // memcpy?
         if (buf == NULL)
         {
             error("tcp_write: cannot allocate requested memory");
             return octave_value(-1);
         }
-        
+
         for (int i = 0; i < data.length(); i++)
             buf[i] = static_cast<uint8_t>(data(i));
 

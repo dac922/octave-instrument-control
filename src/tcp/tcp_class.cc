@@ -70,7 +70,7 @@ int octave_tcp::open(string address, int port)
       error( "could not initialize winsock library" );
       return octave_value();
     }
-#endif    
+#endif
 
     sin.sin_addr.s_addr = inet_addr(address.c_str());
     sin.sin_family = AF_INET;
@@ -84,7 +84,7 @@ int octave_tcp::open(string address, int port)
         octave_tcp::close();
         return -1;
     }
-    
+
     sockerr = connect(this->fd,(struct sockaddr*)&sin, sizeof(struct sockaddr));
     if (sockerr < 0)
     {
@@ -113,12 +113,12 @@ void octave_tcp::print_raw (std::ostream& os, bool pr_as_read_syntax) const
 
 int octave_tcp::read(uint8_t *buf, unsigned int len, int timeout)
 {
-    
+
     struct timeval tv;
     struct timeval *ptv;
-    
+
     fd_set readfds;
-    
+
     if (this->get_fd() < 0)
     {
         error("tcp_read: Interface must be opened first...");
@@ -133,17 +133,17 @@ int octave_tcp::read(uint8_t *buf, unsigned int len, int timeout)
         /* tv.tv_sec = timeout / 1000;
          * tv.tv_usec = (timeout % 1000) * 1000;
          */
-        
+
         ptv = &tv;
         tv.tv_sec = 0;
         tv.tv_usec = timeout * 1000;
-        
+
         // blocking read
         if (timeout < 0)
         {
             ptv = NULL;
         }
-        
+
         FD_ZERO(&readfds);
         FD_SET(this->get_fd(),&readfds);
         if (::select(this->get_fd()+1,&readfds,NULL,NULL,ptv) < 0)
@@ -151,7 +151,7 @@ int octave_tcp::read(uint8_t *buf, unsigned int len, int timeout)
             error("tcp_read: Error while reading/select: %d - %s\n", SOCKETERR, STRSOCKETERR);
             break;
         }
-        
+
         if (FD_ISSET(this->get_fd(),&readfds))
         {
             read_retval = ::recv(get_fd(),(void *)(buf + bytes_read),len - bytes_read,0);
@@ -162,7 +162,7 @@ int octave_tcp::read(uint8_t *buf, unsigned int len, int timeout)
             }
         } else {
             // Timeout
-            break;        
+            break;
         }
 
         bytes_read += read_retval;
@@ -171,11 +171,6 @@ int octave_tcp::read(uint8_t *buf, unsigned int len, int timeout)
         if (bytes_read >= len)
             break;
 
-        // Timeout while in non-blocking mode
-        /*
-         * if (read_retval == 0 && !this->blocking_read)
-         *   break;
-         */
     }
 
     return bytes_read;

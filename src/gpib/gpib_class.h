@@ -25,11 +25,6 @@
 
 using std::string;
 
-#define BITMASK_SET(x,y) ((x) |= (y))
-#define BITMASK_CLEAR(x,y) ((x) &= (~(y)))
-#define BITMASK_TOGGLE(x,y) ((x) ^= (y))
-#define BITMASK_CHECK(x,y) ((x) & (y))
-
 class octave_gpib : public octave_base_value 
 {
 public:
