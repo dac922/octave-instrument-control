@@ -33,16 +33,26 @@ if test "x$ac_cv_search_ibrd" != "xnone required"; then
 fi
 
 # Checks for RPC/VXI11
+AC_ARG_WITH([tirpcinclude],
+  [AC_HELP_STRING([--with-tirpcinclude=DIR],
+    [use TI-RPC headers in DIR])],
+    [tirpc_header_dir=$withval],
+    [tirpc_header_dir=/usr/include/tirpc])
+
 AC_CHECK_PROG([HAVE_RPCGEN], [rpcgen], [yes], [no])
 if test "x$HAVE_RPCGEN" = "xyes"; then
-  AC_CHECK_HEADERS([rpc/rpc.h],
-    [AC_SEARCH_LIBS([clnt_create], [tirpc],
-      [AC_SUBST(BUILD_VXI11, [1])
-        TOBUILD="$TOBUILD vxi11"], [])], [])
+  AC_SEARCH_LIBS([clnt_create], [tirpc],
+    [AC_SUBST(BUILD_VXI11, [1])
+       TOBUILD="$TOBUILD vxi11"], [])
+
+  AC_CHECK_HEADERS([rpc/rpc.h],[],
+    [AC_CHECK_HEADERS([${tirpc_header_dir}/netconfig.h],
+      [AC_SUBST([RPCINCLUDE], ["-I${tirpc_header_dir}"])],[])])
 
   if test "x$ac_cv_search_clnt_create" != "xnone required"; then
     AC_SUBST(RPCLIBS, [$ac_cv_search_clnt_create])
   fi
+
 fi
 
 
@@ -73,7 +83,8 @@ $PACKAGE_NAME is now configured with
        LIBS:          $GPIBLIBS
        
    BUILD VXI11:       $BUILD_VXI11
-       LIBS:          $VXI11LIBS
+       LIBS:          $RPCLIBS
+       INCLUDE:       $RPCINCLUDE
        
    BUILD VISA:        $BUILD_VISA
        LIBS:          $VISALIBS
