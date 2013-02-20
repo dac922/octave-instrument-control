@@ -1,5 +1,0 @@
-compile ser_tb.cc
-
-    mkoctfile ser_tb.cc
-
-should work for linux and cygwin

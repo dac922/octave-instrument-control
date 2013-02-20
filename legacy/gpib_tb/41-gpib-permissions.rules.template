@@ -1,9 +1,0 @@
-ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="3923", ATTRS{idProduct}=="702b", RUN+="/sbin/fxload -t fx -D %N -I __NIUSB_HEX__/niusbb_firmware.hex -s __NIUSB_HEX__/niusbb_loader.hex"
-ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="3923", ATTRS{idProduct}=="702a", RUN+="/sbin/insmod __NIUSB_GPIB__/drivers/gpib/sys/gpib_common.ko"
-ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="3923", ATTRS{idProduct}=="702a", RUN+="/sbin/insmod __NIUSB_GPIB__/drivers/gpib/ni_usb/ni_usb_gpib.ko"
-ACTION=="add", SUBSYSTEM=="usb", ATTRS{idVendor}=="3923", ATTRS{idProduct}=="702a", RUN+="__NIUSB_GPIB__/lib/gpib_config/gpib_config --minor 0"
-
-KERNEL=="gpib*",	MODE="0666",	GROUP="root"
-KERNEL=="gpib[0-9]*",	MODE="0666",	GROUP="root"
-
-LABEL="gpib_rules_meine_end"
