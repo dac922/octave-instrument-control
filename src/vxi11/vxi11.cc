@@ -30,11 +30,11 @@ static bool type_loaded = false;
 
 DEFUN_DLD (vxi11, args, nargout, 
         "-*- texinfo -*-\n\
-@deftypefn {Loadable Function} {@var{vxi11} = } vxi11 (@var{path})\n \
+@deftypefn {Loadable Function} {@var{vxi11} = } vxi11 (@var{ip})\n \
 \n\
 Open vxi11 interface.\n \
 \n\
-@var{path} - the interface path of type String. If omitted defaults to '/dev/vxi110'. @*\
+@var{path} - the ip address of type String. If omitted defaults to '127.0.0.1'. @*\
 \n\
 The vxi11() shall return instance of @var{octave_vxi11} class as the result @var{vxi11}.\n \
 @end deftypefn")
