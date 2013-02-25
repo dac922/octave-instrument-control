@@ -20,7 +20,7 @@
 
 static bool type_loaded = false;
 
-DEFUN_DLD (gpib_close, args, nargout, 
+DEFUN_DLD (gpib_close, args, nargout,
 "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {} gpib_close (@var{gpib})\n \
 \n\
@@ -34,13 +34,13 @@ Close the interface and release a file descriptor.\n \
         octave_gpib::register_type();
         type_loaded = true;
     }
-    
+
     if (args.length() != 1 || args(0).type_id() != octave_gpib::static_type_id())
     {
         print_usage();
         return octave_value(-1);
     }
-    
+
     octave_gpib* gpib = NULL;
 
     const octave_base_value& rep = args(0).get_rep();

@@ -17,7 +17,6 @@
 #include <octave/oct.h>
 
 #ifndef __WIN32__
-#include <errno.h>
 #include <fcntl.h>
 #endif
 
@@ -27,7 +26,7 @@ using std::string;
 
 static bool type_loaded = false;
 
-DEFUN_DLD (usbtmc, args, nargout, 
+DEFUN_DLD (usbtmc, args, nargout,
         "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{usbtmc} = } usbtmc (@var{path})\n \
 \n\
@@ -48,7 +47,7 @@ The usbtmc() shall return instance of @var{octave_usbtmc} class as the result @v
         octave_usbtmc::register_type();
         type_loaded = true;
     }
-    
+
     // Do not open interface if return value is not assigned
     if (nargout != 1)
     {

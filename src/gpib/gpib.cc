@@ -23,7 +23,7 @@
 
 static bool type_loaded = false;
 
-DEFUN_DLD (gpib, args, nargout, 
+DEFUN_DLD (gpib, args, nargout,
 "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{gpib} = } gpib ([@var{gpibid}], [@var{timeout}])\n \
 \n\

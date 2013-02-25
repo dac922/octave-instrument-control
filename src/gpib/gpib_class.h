@@ -21,11 +21,10 @@
 #include <octave/ov-int32.h>
 
 #include <string>
-#include <termios.h>
 
 using std::string;
 
-class octave_gpib : public octave_base_value 
+class octave_gpib : public octave_base_value
 {
 public:
     octave_gpib();
@@ -41,7 +40,7 @@ public:
 
     int set_timeout(int);
     int get_timeout();
-   
+
     //int set_sad(int);
     //int set_send_eoi(int);
     //int set_eos_mode(int);
@@ -49,7 +48,7 @@ public:
     // Overloaded base functions
     double gpib_value() const { return (double)this->gpibid; }
 
-    virtual double scalar_value (bool frc_str_conv = false) const 
+    virtual double scalar_value (bool frc_str_conv = false) const
     {
         return (double)this->gpibid;
     }

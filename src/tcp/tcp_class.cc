@@ -68,14 +68,14 @@ int octave_tcp::open(string address, int port)
     if ( err != 0 )
     {
       error( "could not initialize winsock library" );
-      return octave_value();
+      return -1;
     }
 #endif
 
     sin.sin_addr.s_addr = inet_addr(address.c_str());
     sin.sin_family = AF_INET;
     sin.sin_port = htons(port);
-    bzero(&(sin.sin_zero),8);
+    memset(&(sin.sin_zero),0,8*sizeof(char));
 
     this->fd = socket(AF_INET, SOCK_STREAM,0);
     if (this->fd < 0)
@@ -128,7 +128,7 @@ int octave_tcp::read(uint8_t *buf, unsigned int len, int timeout)
     int bytes_read = 0, read_retval = -1;
 
     // While not interrupted in blocking mode
-    while (!read_interrupt) 
+    while (!read_interrupt)
     {
         /* tv.tv_sec = timeout / 1000;
          * tv.tv_usec = (timeout % 1000) * 1000;
@@ -154,7 +154,7 @@ int octave_tcp::read(uint8_t *buf, unsigned int len, int timeout)
 
         if (FD_ISSET(this->get_fd(),&readfds))
         {
-            read_retval = ::recv(get_fd(),(void *)(buf + bytes_read),len - bytes_read,0);
+            read_retval = ::recv(get_fd(),reinterpret_cast<char *>((buf + bytes_read)),len - bytes_read,0);
             if (read_retval < 0)
             {
                 error("tcp_read: Error while reading: %d - %s\n", SOCKETERR, STRSOCKETERR);
@@ -196,7 +196,7 @@ int octave_tcp::write(uint8_t *buf, unsigned int len)
         return -1;
     }
 
-    return ::send(get_fd(), buf, len, 0);
+    return ::send(get_fd(), reinterpret_cast<const char *>(buf), len, 0);
 }
 
 int octave_tcp::set_timeout(int timeout)

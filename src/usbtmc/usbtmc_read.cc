@@ -23,7 +23,7 @@
 
 static bool type_loaded = false;
 
-DEFUN_DLD (usbtmc_read, args, nargout, 
+DEFUN_DLD (usbtmc_read, args, nargout,
         "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {[@var{data}, @var{count}] = } usbtmc_read (@var{usbtmc}, @var{n})\n \
 \n\
@@ -41,7 +41,7 @@ The usbtmc_read() shall return number of bytes successfully read in @var{count} 
         type_loaded = true;
     }
 
-    
+
     if (args.length() < 1 || args.length() > 2 || args(0).type_id() != octave_usbtmc::static_type_id())
     {
         print_usage();
@@ -67,7 +67,7 @@ The usbtmc_read() shall return number of bytes successfully read in @var{count} 
     if (buffer == NULL)
     {
         error("usbtmc_read: cannot allocate requested memory: %s\n", strerror(errno));
-        return octave_value(-1);  
+        return octave_value(-1);
     }
 
     octave_usbtmc* usbtmc = NULL;
@@ -76,18 +76,18 @@ The usbtmc_read() shall return number of bytes successfully read in @var{count} 
     usbtmc = &((octave_usbtmc &)rep);
 
     int retval;
-    
+
     retval = usbtmc->read(buffer, buffer_len);
-    
+
     octave_value_list return_list;
     uint8NDArray data( dim_vector(1, retval) );
-    
+
     for (int i = 0; i < retval; i++)
         data(i) = buffer[i];
 
     return_list(0) = data;
-    return_list(1) = retval; 
-        
+    return_list(1) = retval;
+
     delete[] buffer;
 
     return return_list;

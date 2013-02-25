@@ -31,7 +31,7 @@ void read_sighandler(int sig)
     read_interrupt = true;
 }
 
-DEFUN_DLD (tcp_read, args, nargout, 
+DEFUN_DLD (tcp_read, args, nargout,
         "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {[@var{data}, @var{count}] = } tcp_read (@var{tcp}, @var{n}, @var{timeout})\n \
 \n\
@@ -103,7 +103,7 @@ The tcp_read() shall return number of bytes successfully read in @var{count} as 
     int bytes_read = tcp->read(buffer, buffer_len, timeout);
 
     // Restore default signal handling
-    // TODO: a better way? 
+    // TODO: a better way?
     install_signal_handlers();
 
     // Convert data to octave type variables

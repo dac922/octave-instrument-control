@@ -20,7 +20,7 @@
 
 static bool type_loaded = false;
 
-DEFUN_DLD (vxi11_write, args, nargout, 
+DEFUN_DLD (vxi11_write, args, nargout,
 "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{n} = } vxi11_write (@var{vxi11}, @var{data})\n \
 \n\
@@ -38,13 +38,13 @@ Upon successful completion, vxi11_write() shall return the number of bytes writt
         type_loaded = true;
     }
 
-    
-    if (args.length() != 2 || args(0).type_id() != octave_vxi11::static_type_id()) 
+
+    if (args.length() != 2 || args(0).type_id() != octave_vxi11::static_type_id())
     {
         print_usage();
         return octave_value(-1);
     }
-    
+
     octave_vxi11* vxi11 = NULL;
 
     const octave_base_value& rep = args(0).get_rep();
@@ -52,7 +52,7 @@ Upon successful completion, vxi11_write() shall return the number of bytes writt
 
     const octave_base_value& data = args(1).get_rep();
     int retval;
-    
+
     if (data.is_string())
     {
         string buf = data.string_value();
@@ -62,12 +62,12 @@ Upon successful completion, vxi11_write() shall return the number of bytes writt
     {
         NDArray dtmp = data.array_value();
         char* buf = new char [dtmp.length()];
-        
+
         for (int i = 0; i < dtmp.length(); i++)
             buf[i] = (char)dtmp(i);
-        
+
         retval = vxi11->write(buf, data.byte_size());
-        
+
         delete[] buf;
     }
     else

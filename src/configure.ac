@@ -22,6 +22,11 @@ TOBUILD=""
 # Howto check if usbtmc is available?
 
 
+# Check for winsock2
+AC_CHECK_HEADERS([winsock2.h],
+  [AC_SEARCH_LIBS([socket], [ws2_32],
+    [AC_SUBST(TCPLIBS, ["-lws2_32"])] , [] )] , [])
+
 # Checks for GPIB 
 AC_CHECK_HEADERS([gpib/ib.h],
   [AC_SEARCH_LIBS([ibrd], [gpib],

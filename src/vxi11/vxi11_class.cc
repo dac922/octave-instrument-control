@@ -21,19 +21,9 @@
 
 #include <octave/oct.h>
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <string>
 
-#ifndef __WIN32__
-#include <errno.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
-#endif
-
 // open or close vxi11 session only on call of vxi11 or vxi11_close
-// not tested with libtirpc yet
 #define OPENONCE
 
 using std::string;
@@ -79,7 +69,7 @@ void octave_vxi11::print_raw (std::ostream& os, bool pr_as_read_syntax) const
 int octave_vxi11::open(string ip)
 {
     std::string inst="inst0";
-    
+
     this->ip=ip;
 
 #ifdef OPENONCE
@@ -194,16 +184,16 @@ int octave_vxi11::read(char *buf, unsigned int len)
 
 int octave_vxi11::write(const char *buf, int len)
 {
-    
+
     CLIENT *client;
     Create_LinkResp *link;
-    
+
     if (this->ip.empty())
     {
         error("vxi11: setup ip first");
         return -1;
     }
-    
+
 #ifdef OPENONCE
     client = this->client;
     link = this->link;
@@ -224,9 +214,9 @@ int octave_vxi11::write(const char *buf, int len)
     send_cmd = new char[len];
     memcpy(send_cmd, buf, len);
 
-    write_parms.lid			= link->lid;
-    write_parms.io_timeout		= VXI11_DEFAULT_TIMEOUT;
-    write_parms.lock_timeout	= VXI11_DEFAULT_TIMEOUT;
+    write_parms.lid          = link->lid;
+    write_parms.io_timeout   = VXI11_DEFAULT_TIMEOUT;
+    write_parms.lock_timeout = VXI11_DEFAULT_TIMEOUT;
 
     /* We can only write (link->maxRecvSize) bytes at a time, so we sit in a loop,
     * writing a chunk at a time, until we're done. */
@@ -255,14 +245,14 @@ int octave_vxi11::write(const char *buf, int len)
             }
         }
         write_parms.data.data_val	= send_cmd + (len - bytes_left);
-		
+
         if(device_write_1(&write_parms, &write_resp, client) != RPC_SUCCESS) {
             delete[] send_cmd;
             error("vxi11: cannot write");
             return -VXI11_NULL_WRITE_RESP; /* The instrument did not acknowledge the write, just completely
-							  dropped it. There was no vxi11 comms error as such, the 
+							  dropped it. There was no vxi11 comms error as such, the
 							  instrument is just being rude. Usually occurs when the instrument
-							  is busy. If we don't check this first, then the following 
+							  is busy. If we don't check this first, then the following
 							  line causes a seg fault */
         }
         if (write_resp.error != 0) {
@@ -285,7 +275,7 @@ int octave_vxi11::write(const char *buf, int len)
 #endif
 
     return 0;
-    
+
 }
 
 int octave_vxi11::close()
@@ -302,7 +292,7 @@ int octave_vxi11::close()
         }
 #endif
     this->ip = "";
-    
+
     return retval;
 }
 
@@ -315,7 +305,7 @@ int octave_vxi11::openvxi(const char *ip, CLIENT **client, Create_LinkResp **lin
         error("vxi11: Error creating client...");
         return -1;
     }
-    
+
     Create_LinkParms link_parms;
 
     /* Set link parameters */
@@ -338,7 +328,7 @@ int octave_vxi11::openvxi(const char *ip, CLIENT **client, Create_LinkResp **lin
 int octave_vxi11::closevxi(const char *ip, CLIENT *client, Create_LinkResp *link)
 {
     Device_Error dev_error;
-	memset(&dev_error, 0, sizeof(dev_error)); 
+	memset(&dev_error, 0, sizeof(dev_error));
 
 	if (destroy_link_1(&link->lid, &dev_error, client) != RPC_SUCCESS)
     {

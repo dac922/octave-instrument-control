@@ -22,7 +22,7 @@
 
 static bool type_loaded = false;
 
-DEFUN_DLD (gpib_write, args, nargout, 
+DEFUN_DLD (gpib_write, args, nargout,
         "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{n} = } gpib_write (@var{gpib}, @var{data})\n \
 \n\
@@ -39,7 +39,7 @@ Upon successful completion, gpib_write() shall return the number of bytes writte
         octave_gpib::register_type();
         type_loaded = true;
     }
-    
+
     if (args.length() != 2 || args(0).type_id() != octave_gpib::static_type_id())
     {
         print_usage();
@@ -61,18 +61,18 @@ Upon successful completion, gpib_write() shall return the number of bytes writte
         NDArray data = args(1).array_value();
         uint8_t* buf = NULL;
         buf = new uint8_t[data.length()];
-        
+
         if (buf == NULL)
         {
             error("gpib_write: cannot allocate requested memory: %s\n", strerror(errno));
-            return octave_value(-1);  
+            return octave_value(-1);
         }
-        
+
         for (int i = 0; i < data.length(); i++)
             buf[i] = static_cast<uint8_t>(data(i));
-        
+
         retval = gpib->write(buf, data.length());
-        
+
         delete[] buf;
     }
     else

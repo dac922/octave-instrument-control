@@ -26,7 +26,7 @@
 
 using std::string;
 
-class octave_vxi11 : public octave_base_value 
+class octave_vxi11 : public octave_base_value
 {
 public:
     octave_vxi11();
@@ -66,7 +66,7 @@ private:
 
     int openvxi(const char *, CLIENT **, Create_LinkResp **, const char *);
     int closevxi(const char *, CLIENT *, Create_LinkResp *);
-    
+
     DECLARE_OCTAVE_ALLOCATOR
     DECLARE_OV_TYPEID_FUNCTIONS_AND_DATA
 };

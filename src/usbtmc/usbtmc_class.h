@@ -23,7 +23,7 @@
 
 using std::string;
 
-class octave_usbtmc : public octave_base_value 
+class octave_usbtmc : public octave_base_value
 {
 public:
     octave_usbtmc();

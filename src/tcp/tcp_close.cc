@@ -20,7 +20,7 @@
 
 static bool type_loaded = false;
 
-DEFUN_DLD (tcp_close, args, nargout, 
+DEFUN_DLD (tcp_close, args, nargout,
 "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {} tcp_close (@var{tcp})\n \
 \n\

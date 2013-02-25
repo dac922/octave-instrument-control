@@ -20,7 +20,7 @@
 
 static bool type_loaded = false;
 
-DEFUN_DLD (tcp_timeout, args, nargout, 
+DEFUN_DLD (tcp_timeout, args, nargout,
         "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {} tcp_timeout (@var{tcp}, @var{timeout})\n \
 @deftypefnx {Loadable Function} {@var{t} = } tcp_timeout (@var{tcp})\n \

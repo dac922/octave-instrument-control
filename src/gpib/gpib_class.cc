@@ -21,10 +21,6 @@
 #include <algorithm>
 
 #include <stdio.h>
-#include <string.h>
-#include <fcntl.h>
-#include <errno.h>
-#include <termios.h>
 #include <unistd.h>
 #include "gpib/ib.h"
 
@@ -186,7 +182,7 @@ int octave_gpib::write(string str)
 
     ibonl(fd,0);
 
-    return gperr; 
+    return gperr;
 }
 
 int octave_gpib::write(uint8_t *buf, unsigned int len)

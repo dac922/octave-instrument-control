@@ -21,11 +21,10 @@
 #include <octave/ov-int32.h>
 
 #include <string>
-#include <termios.h>
 
 using std::string;
 
-class octave_tcp : public octave_base_value 
+class octave_tcp : public octave_base_value
 {
 public:
     octave_tcp();
@@ -46,7 +45,7 @@ public:
     // Overloaded base functions
     double tcp_value() const { return (double)this->fd; }
 
-    virtual double scalar_value (bool frc_str_conv = false) const 
+    virtual double scalar_value (bool frc_str_conv = false) const
     {
         return (double)this->fd;
     }

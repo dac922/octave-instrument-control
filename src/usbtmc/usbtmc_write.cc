@@ -22,7 +22,7 @@
 
 static bool type_loaded = false;
 
-DEFUN_DLD (usbtmc_write, args, nargout, 
+DEFUN_DLD (usbtmc_write, args, nargout,
         "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{n} = } usbtmc_write (@var{usbtmc}, @var{data})\n \
 \n\
@@ -40,20 +40,20 @@ Upon successful completion, usbtmc_write() shall return the number of bytes writ
         type_loaded = true;
     }
 
-    if (args.length() != 2 || args(0).type_id() != octave_usbtmc::static_type_id()) 
+    if (args.length() != 2 || args(0).type_id() != octave_usbtmc::static_type_id())
     {
         print_usage();
         return octave_value(-1);
     }
-    
+
     octave_usbtmc* usbtmc = NULL;
     int retval;
-    
+
     const octave_base_value& rep = args(0).get_rep();
     usbtmc = &((octave_usbtmc &)rep);
 
     const octave_base_value& data = args(1).get_rep();
-    
+
     if (data.is_string())
     {
         string buf = data.string_value();
@@ -68,14 +68,14 @@ Upon successful completion, usbtmc_write() shall return the number of bytes writ
         if (buf == NULL)
         {
             error("usbtmc_write: cannot allocate requested memory: %s\n", strerror(errno));
-            return octave_value(-1);  
+            return octave_value(-1);
         }
-        
+
         for (int i = 0; i < dtmp.length(); i++)
             buf[i] = static_cast<uint8_t>(dtmp(i));
-        
+
         retval = usbtmc->write(buf, dtmp.length());
-        
+
         delete[] buf;
     }
     else

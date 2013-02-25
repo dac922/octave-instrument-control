@@ -33,7 +33,7 @@ void read_sighandler(int sig)
     read_interrupt = true;
 }
 
-DEFUN_DLD (gpib_read, args, nargout, 
+DEFUN_DLD (gpib_read, args, nargout,
         "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {[@var{data}, @var{count}] = } gpib_read (@var{gpib}, @var{n})\n \
 \n\
@@ -50,7 +50,7 @@ The gpib_read() shall return number of bytes successfully read in @var{count} as
         octave_gpib::register_type();
         type_loaded = true;
     }
-    
+
     if (args.length() < 2 || args.length() > 3 || args(0).type_id() != octave_gpib::static_type_id())
     {
         print_usage();
@@ -66,21 +66,21 @@ The gpib_read() shall return number of bytes successfully read in @var{count} as
     }
 
     buffer_len = args(1).int_value();
-    
+
     uint8_t *buffer = NULL;
     buffer = new uint8_t[buffer_len + 1];
 
     if (buffer == NULL)
     {
         error("gpib_read: cannot allocate requested memory: %s\n", strerror(errno));
-        return octave_value(-1);  
+        return octave_value(-1);
     }
 
     octave_gpib* gpib = NULL;
 
     const octave_base_value& rep = args(0).get_rep();
     gpib = &((octave_gpib &)rep);
-    
+
     // Register custom interrupt signal handler
     octave_set_signal_handler(SIGINT, read_sighandler);
     read_interrupt = false;
@@ -89,9 +89,9 @@ The gpib_read() shall return number of bytes successfully read in @var{count} as
     int bytes_read = gpib->read(buffer, buffer_len);
 
     // Restore default signal handling
-    // TODO: a better way? 
+    // TODO: a better way?
     install_signal_handlers();
-    
+
     // Convert data to octave type variables
     octave_value_list return_list;
     uint8NDArray data( dim_vector(1, bytes_read) );

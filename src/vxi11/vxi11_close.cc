@@ -20,7 +20,7 @@
 
 static bool type_loaded = false;
 
-DEFUN_DLD (vxi11_close, args, nargout, 
+DEFUN_DLD (vxi11_close, args, nargout,
 "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {} vxi11_close (@var{vxi11})\n \
 \n\
@@ -35,7 +35,7 @@ Close the interface and release a file descriptor.\n \
         type_loaded = true;
     }
 
-    
+
     if (args.length() != 1 || args(0).type_id() != octave_vxi11::static_type_id())
     {
         print_usage();

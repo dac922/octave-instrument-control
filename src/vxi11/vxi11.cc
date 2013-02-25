@@ -18,7 +18,6 @@
 
 #ifndef __WIN32__
 #include <errno.h>
-#include <fcntl.h>
 #endif
 
 using std::string;
@@ -28,7 +27,7 @@ using std::string;
 
 static bool type_loaded = false;
 
-DEFUN_DLD (vxi11, args, nargout, 
+DEFUN_DLD (vxi11, args, nargout,
         "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {@var{vxi11} = } vxi11 (@var{ip})\n \
 \n\
@@ -49,7 +48,7 @@ The vxi11() shall return instance of @var{octave_vxi11} class as the result @var
         octave_vxi11::register_type();
         type_loaded = true;
     }
-    
+
     // Do not open interface if return value is not assigned
     if (nargout != 1)
     {
@@ -58,7 +57,6 @@ The vxi11() shall return instance of @var{octave_vxi11} class as the result @var
     }
 
     // Default values
-    int oflags = O_RDWR;
     string path("127.0.0.1");
 
     // Parse the function arguments
@@ -78,7 +76,7 @@ The vxi11() shall return instance of @var{octave_vxi11} class as the result @var
 
     // Open the interface
     octave_vxi11* retval = new octave_vxi11;
-    
+
     if (retval->open(path) < 0)
     {
         error("vxi11: Error opening the interface: %s\n", strerror(errno));

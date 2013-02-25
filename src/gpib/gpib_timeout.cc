@@ -20,7 +20,7 @@
 
 static bool type_loaded = false;
 
-DEFUN_DLD (gpib_timeout, args, nargout, 
+DEFUN_DLD (gpib_timeout, args, nargout,
         "-*- texinfo -*-\n\
 @deftypefn {Loadable Function} {} gpib_timeout (@var{gpib}, @var{timeout})\n \
 @deftypefnx {Loadable Function} {@var{t} = } gpib_timeout (@var{gpib})\n \
@@ -38,7 +38,7 @@ If @var{timeout} parameter is omitted, the gpib_timeout() shall return current t
         octave_gpib::register_type();
         type_loaded = true;
     }
-    
+
     if (args.length() < 1 || args.length() > 2 || args(0).type_id() != octave_gpib::static_type_id())
     {
         print_usage();

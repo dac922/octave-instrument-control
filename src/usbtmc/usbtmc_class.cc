@@ -16,15 +16,13 @@
 
 #include <octave/oct.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
-
+#ifndef __WIN32__
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
-#include <sys/ioctl.h>
+#endif
 
+#include <string>
 
 using std::string;
 
@@ -73,7 +71,7 @@ int octave_usbtmc::open(string path, int flags)
 }
 
 int octave_usbtmc::read(uint8_t *buf, unsigned int len)
-{   
+{
     if (this->get_fd() < 0)
     {
         error("usbtmc: Interface must be open first...");
