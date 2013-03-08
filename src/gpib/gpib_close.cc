@@ -16,9 +16,15 @@
 
 #include <octave/oct.h>
 
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif
+
+#ifdef BUILD_GPIB
 #include "gpib_class.h"
 
 static bool type_loaded = false;
+#endif
 
 DEFUN_DLD (gpib_close, args, nargout,
 "-*- texinfo -*-\n\
@@ -29,6 +35,10 @@ Close the interface and release a file descriptor.\n \
 @var{gpib} - instance of @var{octave_gpib} class.@*\
 @end deftypefn")
 {
+#ifndef BUILD_GPIB
+    error("gpib: Your system doesn't support the GPIB interface");
+    return octave_value();
+#else
     if (!type_loaded)
     {
         octave_gpib::register_type();
@@ -49,4 +59,5 @@ Close the interface and release a file descriptor.\n \
     gpib->close();
 
     return octave_value();
+#endif
 }

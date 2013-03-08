@@ -1,19 +1,23 @@
 OCT := gpib.oct gpib_timeout.oct gpib_write.oct gpib_close.oct gpib_read.oct
 OBJ := gpib_class.o
 
-MKOCTFILE ?= mkoctfile
+MKOCTFILE  ?= mkoctfile
 
-GPIBLIBS ?= -lgpib
+CFLAGS      = @DEFS@
+LFLAGS      = @GPIBLIBS@
 
 all: $(OBJ) $(OCT)
 
 %.o: %.cc
-	$(MKOCTFILE) -c $^
+	$(MKOCTFILE) $(CFLAGS) -c $^
 
 %.oct: %.o
-	$(MKOCTFILE) $^ $(OBJ) $(GPIBLIBS) -o ../$@
+	$(MKOCTFILE) $^ $(OBJ) $(LFLAGS) -o ../$@
 
 clean:
 	rm -f *.oct *.o
+
+distclean: clean
+	rm Makefile
 
 .PHONY: all clean

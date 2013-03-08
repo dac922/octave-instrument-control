@@ -15,6 +15,12 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <octave/oct.h>
+
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif
+
+#ifdef BUILD_TCP
 #include <octave/uint8NDArray.h>
 
 #include <errno.h>
@@ -22,6 +28,7 @@
 #include "usbtmc_class.h"
 
 static bool type_loaded = false;
+#endif
 
 DEFUN_DLD (usbtmc_read, args, nargout,
         "-*- texinfo -*-\n\
@@ -35,6 +42,10 @@ Read from usbtmc slave device.\n \
 The usbtmc_read() shall return number of bytes successfully read in @var{count} as Integer and the bytes themselves in @var{data} as uint8 array.\n \
 @end deftypefn")
 {
+#ifndef BUILD_USBTMC
+    error("usbtmc: Your system doesn't support the USBTMC interface");
+    return octave_value();
+#else
     if (!type_loaded)
     {
         octave_usbtmc::register_type();
@@ -91,4 +102,5 @@ The usbtmc_read() shall return number of bytes successfully read in @var{count} 
     delete[] buffer;
 
     return return_list;
+#endif
 }

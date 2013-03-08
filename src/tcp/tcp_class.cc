@@ -16,6 +16,11 @@
 
 #include <octave/oct.h>
 
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif
+
+#ifdef BUILD_TCP
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -244,3 +249,4 @@ int octave_tcp::close()
 
     return retval;
 }
+#endif

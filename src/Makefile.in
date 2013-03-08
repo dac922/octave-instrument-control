@@ -1,18 +1,5 @@
-#OCT = instrument-control.oct
-TOBUILD = @TOBUILD@
-SUBDIRS = usbtmc tcp $(TOBUILD)
 
-GPIBLIBS    = @GPIBLIBS@
-RPCLIBS     = @RPCLIBS@
-RPCINCLUDE  = @RPCINCLUDE@
-VISALIBS    = @VISALIBS@
-TCPLIBS     = @TCPLIBS@
-
-export GPIBLIBS
-export RPCLIBS
-export RPCINCLUDE
-export VISALIBS
-export TCPLIBS
+SUBDIRS = usbtmc tcp gpib vxi11
 
 MKOCTFILE ?= mkoctfile
 
@@ -26,9 +13,10 @@ all:
 clean:
 	 @for dir in $(SUBDIRS); do $(MAKE) -i -C $$dir clean; done
 
-realclean: clean
+realclean:
 	 rm -f *.oct
 
 distclean: realclean
+	 @for dir in $(SUBDIRS); do $(MAKE) -i -C $$dir distclean; done
 	 rm -rf autom4te.cache
 	 rm -f Makefile config.status config.log config.h configure

@@ -16,9 +16,15 @@
 
 #include <octave/oct.h>
 
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif
+
+#ifdef BUILD_TCP
 #include "tcp_class.h"
 
 static bool type_loaded = false;
+#endif
 
 DEFUN_DLD (tcp_close, args, nargout,
 "-*- texinfo -*-\n\
@@ -29,6 +35,10 @@ Close the interface and release a file descriptor.\n \
 @var{tcp} - instance of @var{octave_tcp} class.@*\
 @end deftypefn")
 {
+#ifndef BUILD_TCP
+    error("tcp: Your system doesn't support the TCP interface");
+    return octave_value();
+#else
     if (!type_loaded)
     {
         octave_tcp::register_type();
@@ -49,4 +59,5 @@ Close the interface and release a file descriptor.\n \
     tcp->close();
 
     return octave_value();
+#endif
 }

@@ -16,11 +16,14 @@
 
 #include <octave/oct.h>
 
-#ifndef __WIN32__
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif
+
+#ifdef BUILD_TCP
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
-#endif
 
 #include <string>
 
@@ -113,4 +116,5 @@ int octave_usbtmc::close()
     }
 
     return retval;
+#endif
 }

@@ -16,15 +16,19 @@
 
 #include <octave/oct.h>
 
-#ifndef __WIN32__
-#include <fcntl.h>
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
 #endif
+
+#ifdef BUILD_TCP
+#include <fcntl.h>
 
 using std::string;
 
 #include "usbtmc_class.h"
 
 static bool type_loaded = false;
+#endif
 
 DEFUN_DLD (usbtmc, args, nargout,
         "-*- texinfo -*-\n\
@@ -37,11 +41,10 @@ Open usbtmc interface.\n \
 The usbtmc() shall return instance of @var{octave_usbtmc} class as the result @var{usbtmc}.\n \
 @end deftypefn")
 {
-#ifdef __WIN32__
-    error("usbtmc: Windows platform support is not yet implemented, go away...");
+#ifndef BUILD_USBTMC
+    error("usbtmc: Your system doesn't support the USBTMC interface");
     return octave_value();
-#endif
-
+#else
     if (!type_loaded)
     {
         octave_usbtmc::register_type();
@@ -81,4 +84,5 @@ The usbtmc() shall return instance of @var{octave_usbtmc} class as the result @v
         return octave_value();
 
     return octave_value(retval);
+#endif
 }

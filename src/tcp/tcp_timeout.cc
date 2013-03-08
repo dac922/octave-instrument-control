@@ -16,9 +16,15 @@
 
 #include <octave/oct.h>
 
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif
+
+#ifdef BUILD_TCP
 #include "tcp_class.h"
 
 static bool type_loaded = false;
+#endif
 
 DEFUN_DLD (tcp_timeout, args, nargout,
         "-*- texinfo -*-\n\
@@ -33,6 +39,10 @@ Set new or get existing tcp interface timeout parameter used for tcp_read() requ
 If @var{timeout} parameter is omitted, the tcp_timeout() shall return current timeout value as the result @var{t}.\n \
 @end deftypefn")
 {
+#ifndef BUILD_TCP
+    error("tcp: Your system doesn't support the TCP interface");
+    return octave_value();
+#else
     if (!type_loaded)
     {
         octave_tcp::register_type();
@@ -66,4 +76,5 @@ If @var{timeout} parameter is omitted, the tcp_timeout() shall return current ti
 
     // Returning current timeout
     return octave_value(tcp->get_timeout());
+#endif
 }

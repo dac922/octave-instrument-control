@@ -3,15 +3,20 @@ OBJ := usbtmc_class.o
 
 MKOCTFILE ?= mkoctfile
 
+CFLAGS     = @DEFS@
+
 all: $(OBJ) $(OCT)
 
 %.o: %.cc
-	$(MKOCTFILE) -c $^
+	$(MKOCTFILE) $(CFLAGS) -c $^
 
 %.oct: %.o
 	$(MKOCTFILE) $^ $(OBJ) -o ../$@
 
 clean:
 	rm -f *.oct *.o
+	
+distclean: clean
+	rm Makefile
 
 .PHONY: all clean

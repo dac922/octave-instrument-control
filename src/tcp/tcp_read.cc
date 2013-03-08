@@ -15,6 +15,12 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <octave/oct.h>
+
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif
+
+#ifdef BUILD_TCP
 #include <octave/uint8NDArray.h>
 #include <octave/sighandlers.h>
 
@@ -30,6 +36,7 @@ void read_sighandler(int sig)
     printf("tcp_read: Interrupting...\n\r");
     read_interrupt = true;
 }
+#endif
 
 DEFUN_DLD (tcp_read, args, nargout,
         "-*- texinfo -*-\n\
@@ -44,6 +51,10 @@ Read from tcp interface.\n \
 The tcp_read() shall return number of bytes successfully read in @var{count} as Integer and the bytes themselves in @var{data} as uint8 array.\n \
 @end deftypefn")
 {
+#ifndef BUILD_TCP
+    error("tcp: Your system doesn't support the TCP interface");
+    return octave_value();
+#else
     if (!type_loaded)
     {
         octave_tcp::register_type();
@@ -119,4 +130,5 @@ The tcp_read() shall return number of bytes successfully read in @var{count} as 
     delete[] buffer;
 
     return return_list;
+#endif
 }

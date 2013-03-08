@@ -16,11 +16,19 @@
 
 #include <octave/oct.h>
 
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif
+
+#ifdef BUILD_GPIB
 #include <errno.h>
 
 #include "gpib_class.h"
 
+
 static bool type_loaded = false;
+#endif
+
 
 DEFUN_DLD (gpib_write, args, nargout,
         "-*- texinfo -*-\n\
@@ -34,6 +42,10 @@ Write data to a gpib interface.\n \
 Upon successful completion, gpib_write() shall return the number of bytes written as the result @var{n}.\n \
 @end deftypefn")
 {
+#ifndef BUILD_GPIB
+    error("gpib: Your system doesn't support the GPIB interface");
+    return octave_value();
+#else
     if (!type_loaded)
     {
         octave_gpib::register_type();
@@ -82,4 +94,5 @@ Upon successful completion, gpib_write() shall return the number of bytes writte
     }
 
     return octave_value(retval);
+#endif
 }

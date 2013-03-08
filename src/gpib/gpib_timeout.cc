@@ -16,9 +16,16 @@
 
 #include <octave/oct.h>
 
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif
+
+#ifdef BUILD_GPIB
+
 #include "gpib_class.h"
 
 static bool type_loaded = false;
+#endif
 
 DEFUN_DLD (gpib_timeout, args, nargout,
         "-*- texinfo -*-\n\
@@ -33,6 +40,10 @@ Set new or get existing gpib interface timeout parameter used for gpib_read() re
 If @var{timeout} parameter is omitted, the gpib_timeout() shall return current timeout value as the result @var{t}.\n \
 @end deftypefn")
 {
+#ifndef BUILD_GPIB
+    error("gpib: Your system doesn't support the GPIB interface");
+    return octave_value();
+#else
     if (!type_loaded)
     {
         octave_gpib::register_type();
@@ -66,4 +77,5 @@ If @var{timeout} parameter is omitted, the gpib_timeout() shall return current t
 
     // Returning current timeout
     return octave_value(gpib->get_timeout());
+#endif
 }

@@ -16,11 +16,17 @@
 
 #include <octave/oct.h>
 
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif
+
+#ifdef BUILD_TCP
 #include <errno.h>
 
 #include "usbtmc_class.h"
 
 static bool type_loaded = false;
+#endif
 
 DEFUN_DLD (usbtmc_write, args, nargout,
         "-*- texinfo -*-\n\
@@ -34,6 +40,10 @@ Write data to a usbtmc slave device.\n \
 Upon successful completion, usbtmc_write() shall return the number of bytes written as the result @var{n}.\n \
 @end deftypefn")
 {
+#ifndef BUILD_USBTMC
+    error("usbtmc: Your system doesn't support the USBTMC interface");
+    return octave_value();
+#else
     if (!type_loaded)
     {
         octave_usbtmc::register_type();
@@ -85,4 +95,5 @@ Upon successful completion, usbtmc_write() shall return the number of bytes writ
     }
 
     return octave_value(retval);
+#endif
 }

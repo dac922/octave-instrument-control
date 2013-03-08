@@ -16,12 +16,18 @@
 
 #include <octave/oct.h>
 
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif
+
+#ifdef BUILD_GPIB
 #include <errno.h>
-#include <fcntl.h>
+//#include <fcntl.h>
 
 #include "gpib_class.h"
 
 static bool type_loaded = false;
+#endif
 
 DEFUN_DLD (gpib, args, nargout,
 "-*- texinfo -*-\n\
@@ -35,7 +41,10 @@ Open gpib interface.\n \
 The gpib() shall return instance of @var{octave_gpib} class as the result @var{gpib}.\n \
 @end deftypefn")
 {
-
+#ifndef BUILD_GPIB
+    error("gpib: Your system doesn't support the GPIB interface");
+    return octave_value();
+#else
     if (!type_loaded)
     {
         octave_gpib::register_type();
@@ -103,4 +112,5 @@ The gpib() shall return instance of @var{octave_gpib} class as the result @var{g
     //retval->set_eos_mode(eot);
 
     return octave_value(retval);
+#endif
 }

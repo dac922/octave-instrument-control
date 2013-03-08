@@ -15,12 +15,16 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <octave/oct.h>
+
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif
+
+#ifdef BUILD_GPIB
 #include <octave/uint8NDArray.h>
 #include <octave/sighandlers.h>
 
-#ifndef __WIN32__
 #include <errno.h>
-#endif
 
 #include "gpib_class.h"
 
@@ -32,6 +36,7 @@ void read_sighandler(int sig)
     printf("gpib_read: Interrupting...\n\r");
     read_interrupt = true;
 }
+#endif
 
 DEFUN_DLD (gpib_read, args, nargout,
         "-*- texinfo -*-\n\
@@ -45,6 +50,10 @@ Read from gpib interface.\n \
 The gpib_read() shall return number of bytes successfully read in @var{count} as Integer and the bytes themselves in @var{data} as uint8 array.\n \
 @end deftypefn")
 {
+#ifndef BUILD_GPIB
+    error("gpib: Your system doesn't support the GPIB interface");
+    return octave_value();
+#else
     if (!type_loaded)
     {
         octave_gpib::register_type();
@@ -105,4 +114,5 @@ The gpib_read() shall return number of bytes successfully read in @var{count} as
     delete[] buffer;
 
     return return_list;
+#endif
 }

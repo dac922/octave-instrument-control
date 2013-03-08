@@ -16,6 +16,11 @@
 
 #include <octave/oct.h>
 
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif
+
+#ifdef BUILD_GPIB
 #include <iostream>
 #include <string>
 #include <algorithm>
@@ -269,3 +274,4 @@ int octave_gpib::close()
     this->minor = -1;
     return -1;
 }
+#endif

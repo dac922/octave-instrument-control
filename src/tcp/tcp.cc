@@ -16,9 +16,15 @@
 
 #include <octave/oct.h>
 
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif
+
+#ifdef BUILD_TCP
 #include "tcp_class.h"
 
 static bool type_loaded = false;
+#endif
 
 DEFUN_DLD (tcp, args, nargout,
         "-*- texinfo -*-\n\
@@ -33,7 +39,10 @@ Open tcp interface.\n \
 The tcp() shall return instance of @var{octave_tcp} class as the result @var{tcp}.\n \
 @end deftypefn")
 {
-
+#ifndef BUILD_TCP
+    error("tcp: Your system doesn't support the TCO interface");
+    return octave_value();
+#else
     if (!type_loaded)
     {
         octave_tcp::register_type();
@@ -108,4 +117,5 @@ The tcp() shall return instance of @var{octave_tcp} class as the result @var{tcp
     //retval->flush(2);
 
     return octave_value(retval);
+#endif
 }

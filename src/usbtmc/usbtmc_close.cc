@@ -16,9 +16,15 @@
 
 #include <octave/oct.h>
 
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif
+
+#ifdef BUILD_TCP
 #include "usbtmc_class.h"
 
 static bool type_loaded = false;
+#endif
 
 DEFUN_DLD (usbtmc_close, args, nargout,
 "-*- texinfo -*-\n\
@@ -29,6 +35,10 @@ Close the interface and release a file descriptor.\n \
 @var{usbtmc} - instance of @var{octave_usbtmc} class.@*\
 @end deftypefn")
 {
+#ifndef BUILD_USBTMC
+    error("usbtmc: Your system doesn't support the USBTMC interface");
+    return octave_value();
+#else
     if (!type_loaded)
     {
         octave_usbtmc::register_type();
@@ -50,4 +60,5 @@ Close the interface and release a file descriptor.\n \
     usbtmc->close();
 
     return octave_value();
+#endif
 }
