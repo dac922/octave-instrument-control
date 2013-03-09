@@ -620,14 +620,13 @@ ac_includes_default="\
 
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
-TOBUILD
-VISALIBS
-BUILD_VISA
-RPCLIBS
 BUILD_VXI11
+VISALIBS
+RPCLIBS
+RPCINCLUDE
 HAVE_RPCGEN
 GPIBLIBS
-BUILD_GPIB
+TCPLIBS
 EGREP
 GREP
 CXXCPP
@@ -680,6 +679,7 @@ SHELL'
 ac_subst_files=''
 ac_user_opts='
 enable_option_checking
+with_tirpcinclude
 '
       ac_precious_vars='build_alias
 host_alias
@@ -1296,6 +1296,11 @@ if test -n "$ac_init_help"; then
      short | recursive ) echo "Configuration of octave instrument control package 0.0.0+:";;
    esac
   cat <<\_ACEOF
+
+Optional Packages:
+  --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
+  --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
+  --with-tirpcinclude=DIR use TI-RPC headers in DIR
 
 Some influential environment variables:
   CXX         C++ compiler command
@@ -2019,7 +2024,8 @@ ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $
 ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
-#AC_CONFIG_HEADERS([config.h])
+ac_config_headers="$ac_config_headers config.h"
+
 
 # Checks for programs.
 ac_ext=cpp
@@ -2581,12 +2587,17 @@ if test $HAVE_MKOCTFILE = "no"; then
   as_fn_error $? "mkoctfile required to install $PACKAGE_NAME" "$LINENO" 5
 fi
 
-TOBUILD=""
+build_parallel=no
+build_serial=no
+build_i2c=no
+build_usbtmc=no
+build_tcp=no
+build_gpib=no
+build_vxi11=no
+build_visa=no
 
-# Howto check if usbtmc is available?
-
-
-# Checks for GPIB
+# check for i2c
+# if linux/i2c-dev.h exists we are probably under linux, so build usbtmc as well
 
 ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
@@ -2981,6 +2992,159 @@ fi
 done
 
 
+for ac_header in linux/i2c-dev.h
+do :
+  ac_fn_cxx_check_header_mongrel "$LINENO" "linux/i2c-dev.h" "ac_cv_header_linux_i2c_dev_h" "$ac_includes_default"
+if test "x$ac_cv_header_linux_i2c_dev_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LINUX_I2C_DEV_H 1
+_ACEOF
+ build_i2c=yes build_usbtmc=yes
+fi
+
+done
+
+for ac_header in dev/iicbus/iic.h
+do :
+  ac_fn_cxx_check_header_mongrel "$LINENO" "dev/iicbus/iic.h" "ac_cv_header_dev_iicbus_iic_h" "$ac_includes_default"
+if test "x$ac_cv_header_dev_iicbus_iic_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_DEV_IICBUS_IIC_H 1
+_ACEOF
+ build_i2c=yes
+fi
+
+done
+
+
+# check for serial
+for ac_header in termios.h
+do :
+  ac_fn_cxx_check_header_mongrel "$LINENO" "termios.h" "ac_cv_header_termios_h" "$ac_includes_default"
+if test "x$ac_cv_header_termios_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_TERMIOS_H 1
+_ACEOF
+ build_serial=yes
+fi
+
+done
+
+
+# check for parallel
+for ac_header in linux/parport.h linux/ppdev.h
+do :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_cxx_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+ build_parallel=yes
+fi
+
+done
+
+for ac_header in dev/ppbus/ppi.h dev/ppbus/ppbconf.h
+do :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_cxx_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+ build_parallel=yes
+fi
+
+done
+
+
+# build tcp, available for most platforms
+for ac_header in sys/socket.h
+do :
+  ac_fn_cxx_check_header_mongrel "$LINENO" "sys/socket.h" "ac_cv_header_sys_socket_h" "$ac_includes_default"
+if test "x$ac_cv_header_sys_socket_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_SYS_SOCKET_H 1
+_ACEOF
+ build_tcp=yes
+fi
+
+done
+
+
+# Check for winsock2 and ws2_32
+for ac_header in winsock2.h
+do :
+  ac_fn_cxx_check_header_mongrel "$LINENO" "winsock2.h" "ac_cv_header_winsock2_h" "$ac_includes_default"
+if test "x$ac_cv_header_winsock2_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_WINSOCK2_H 1
+_ACEOF
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing _head_libws2_32_a" >&5
+$as_echo_n "checking for library containing _head_libws2_32_a... " >&6; }
+if ${ac_cv_search__head_libws2_32_a+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char _head_libws2_32_a ();
+int
+main ()
+{
+return _head_libws2_32_a ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' ws2_32; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_cxx_try_link "$LINENO"; then :
+  ac_cv_search__head_libws2_32_a=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search__head_libws2_32_a+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search__head_libws2_32_a+:} false; then :
+
+else
+  ac_cv_search__head_libws2_32_a=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search__head_libws2_32_a" >&5
+$as_echo "$ac_cv_search__head_libws2_32_a" >&6; }
+ac_res=$ac_cv_search__head_libws2_32_a
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  TCPLIBS="-lws2_32"
+ build_tcp=yes
+fi
+
+fi
+
+done
+
+
+
+# Checks for GPIB
 for ac_header in gpib/ib.h
 do :
   ac_fn_cxx_check_header_mongrel "$LINENO" "gpib/ib.h" "ac_cv_header_gpib_ib_h" "$ac_includes_default"
@@ -3041,9 +3205,7 @@ $as_echo "$ac_cv_search_ibrd" >&6; }
 ac_res=$ac_cv_search_ibrd
 if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  BUILD_GPIB=1
-
-      TOBUILD="$TOBUILD gpib"
+  build_gpib=yes
 fi
 
 fi
@@ -3056,7 +3218,17 @@ if test "x$ac_cv_search_ibrd" != "xnone required"; then
 
 fi
 
+
 # Checks for RPC/VXI11
+
+# Check whether --with-tirpcinclude was given.
+if test "${with_tirpcinclude+set}" = set; then :
+  withval=$with_tirpcinclude; tirpc_header_dir=$withval
+else
+  tirpc_header_dir=/usr/include/tirpc
+fi
+
+
 # Extract the first word of "rpcgen", so it can be a program name with args.
 set dummy rpcgen; ac_word=$2
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
@@ -3096,14 +3268,7 @@ fi
 
 
 if test "x$HAVE_RPCGEN" = "xyes"; then
-  for ac_header in rpc/rpc.h
-do :
-  ac_fn_cxx_check_header_mongrel "$LINENO" "rpc/rpc.h" "ac_cv_header_rpc_rpc_h" "$ac_includes_default"
-if test "x$ac_cv_header_rpc_rpc_h" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_RPC_RPC_H 1
-_ACEOF
- { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing clnt_create" >&5
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing clnt_create" >&5
 $as_echo_n "checking for library containing clnt_create... " >&6; }
 if ${ac_cv_search_clnt_create+:} false; then :
   $as_echo_n "(cached) " >&6
@@ -3156,10 +3321,33 @@ $as_echo "$ac_cv_search_clnt_create" >&6; }
 ac_res=$ac_cv_search_clnt_create
 if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  BUILD_VXI11=1
-
-        TOBUILD="$TOBUILD vxi11"
+  build_vxi11=yes
 fi
+
+  for ac_header in rpc/rpc.h
+do :
+  ac_fn_cxx_check_header_mongrel "$LINENO" "rpc/rpc.h" "ac_cv_header_rpc_rpc_h" "$ac_includes_default"
+if test "x$ac_cv_header_rpc_rpc_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_RPC_RPC_H 1
+_ACEOF
+
+else
+  for ac_header in ${tirpc_header_dir}/netconfig.h
+do :
+  as_ac_Header=`$as_echo "ac_cv_header_$ac_header" | $as_tr_sh`
+ac_fn_cxx_check_header_mongrel "$LINENO" "$ac_header" "$as_ac_Header" "$ac_includes_default"
+if eval test \"x\$"$as_ac_Header"\" = x"yes"; then :
+  cat >>confdefs.h <<_ACEOF
+#define `$as_echo "HAVE_$ac_header" | $as_tr_cpp` 1
+_ACEOF
+ RPCINCLUDE="-I${tirpc_header_dir}"
+
+else
+  build_vxi11=no
+fi
+
+done
 
 fi
 
@@ -3170,6 +3358,7 @@ done
     RPCLIBS=$ac_cv_search_clnt_create
 
   fi
+
 fi
 
 
@@ -3234,9 +3423,7 @@ $as_echo "$ac_cv_search_viOpenDefaultRM" >&6; }
 ac_res=$ac_cv_search_viOpenDefaultRM
 if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
-  BUILD_VISA=1
-
-      TOBUILD="$TOBUILD visa"
+  build_vxi11=yes
 fi
 
 fi
@@ -3250,10 +3437,62 @@ if test "x$ac_cv_search_viOpenDefaultRM" != "xnone required"; then
 fi
 
 
+#
+
+if test $build_parallel = yes; then
+
+$as_echo "#define BUILD_PARALLEL /**/" >>confdefs.h
+
+fi
+
+if test $build_serial = yes; then
+
+$as_echo "#define BUILD_SERIAL /**/" >>confdefs.h
+
+fi
+
+if test $build_i2c = yes; then
+
+$as_echo "#define BUILD_I2C /**/" >>confdefs.h
+
+fi
+
+if test $build_usbtmc = yes; then
+
+$as_echo "#define BUILD_USBTMC /**/" >>confdefs.h
+
+fi
+
+if test $build_tcp = yes; then
+
+$as_echo "#define BUILD_TCP /**/" >>confdefs.h
+
+fi
+
+if test $build_gpib = yes; then
+
+$as_echo "#define BUILD_GPIB /**/" >>confdefs.h
+
+fi
+
+if test $build_vxi11 = yes; then
+
+$as_echo "#define BUILD_VXI11 /**/" >>confdefs.h
+
+  BUILD_VXI11=1
+
+fi
+
+if test $build_visa = yes; then
+
+$as_echo "#define BUILD_VISA /**/" >>confdefs.h
+
+fi
+
 
 # all done
 
-ac_config_files="$ac_config_files Makefile"
+ac_config_files="$ac_config_files Makefile gpib/Makefile tcp/Makefile vxi11/Makefile usbtmc/Makefile serial/Makefile parallel/Makefile i2c/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -3345,43 +3584,7 @@ test "x$prefix" = xNONE && prefix=$ac_default_prefix
 # Let make expand exec_prefix.
 test "x$exec_prefix" = xNONE && exec_prefix='${prefix}'
 
-# Transform confdefs.h into DEFS.
-# Protect against shell expansion while executing Makefile rules.
-# Protect against Makefile macro expansion.
-#
-# If the first sed substitution is executed (which looks for macros that
-# take arguments), then branch to the quote section.  Otherwise,
-# look for a macro that doesn't take arguments.
-ac_script='
-:mline
-/\\$/{
- N
- s,\\\n,,
- b mline
-}
-t clear
-:clear
-s/^[	 ]*#[	 ]*define[	 ][	 ]*\([^	 (][^	 (]*([^)]*)\)[	 ]*\(.*\)/-D\1=\2/g
-t quote
-s/^[	 ]*#[	 ]*define[	 ][	 ]*\([^	 ][^	 ]*\)[	 ]*\(.*\)/-D\1=\2/g
-t quote
-b any
-:quote
-s/[	 `~#$^&*(){}\\|;'\''"<>?]/\\&/g
-s/\[/\\&/g
-s/\]/\\&/g
-s/\$/$$/g
-H
-:any
-${
-	g
-	s/^\n//
-	s/\n/ /g
-	p
-}
-'
-DEFS=`sed -n "$ac_script" confdefs.h`
-
+DEFS=-DHAVE_CONFIG_H
 
 ac_libobjs=
 ac_ltlibobjs=
@@ -3815,11 +4018,15 @@ case $ac_config_files in *"
 "*) set x $ac_config_files; shift; ac_config_files=$*;;
 esac
 
+case $ac_config_headers in *"
+"*) set x $ac_config_headers; shift; ac_config_headers=$*;;
+esac
 
 
 cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
 # Files that config.status was made for.
 config_files="$ac_config_files"
+config_headers="$ac_config_headers"
 
 _ACEOF
 
@@ -3840,9 +4047,14 @@ Usage: $0 [OPTION]... [TAG]...
       --recheck    update $as_me by reconfiguring in the same conditions
       --file=FILE[:TEMPLATE]
                    instantiate the configuration file FILE
+      --header=FILE[:TEMPLATE]
+                   instantiate the configuration header FILE
 
 Configuration files:
 $config_files
+
+Configuration headers:
+$config_headers
 
 Report bugs to the package provider."
 
@@ -3904,7 +4116,18 @@ do
     esac
     as_fn_append CONFIG_FILES " '$ac_optarg'"
     ac_need_defaults=false;;
-  --he | --h |  --help | --hel | -h )
+  --header | --heade | --head | --hea )
+    $ac_shift
+    case $ac_optarg in
+    *\'*) ac_optarg=`$as_echo "$ac_optarg" | sed "s/'/'\\\\\\\\''/g"` ;;
+    esac
+    as_fn_append CONFIG_HEADERS " '$ac_optarg'"
+    ac_need_defaults=false;;
+  --he | --h)
+    # Conflict between --help and --header
+    as_fn_error $? "ambiguous option: \`$1'
+Try \`$0 --help' for more information.";;
+  --help | --hel | -h )
     $as_echo "$ac_cs_usage"; exit ;;
   -q | -quiet | --quiet | --quie | --qui | --qu | --q \
   | -silent | --silent | --silen | --sile | --sil | --si | --s)
@@ -3960,7 +4183,15 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
+    "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
+    "gpib/Makefile") CONFIG_FILES="$CONFIG_FILES gpib/Makefile" ;;
+    "tcp/Makefile") CONFIG_FILES="$CONFIG_FILES tcp/Makefile" ;;
+    "vxi11/Makefile") CONFIG_FILES="$CONFIG_FILES vxi11/Makefile" ;;
+    "usbtmc/Makefile") CONFIG_FILES="$CONFIG_FILES usbtmc/Makefile" ;;
+    "serial/Makefile") CONFIG_FILES="$CONFIG_FILES serial/Makefile" ;;
+    "parallel/Makefile") CONFIG_FILES="$CONFIG_FILES parallel/Makefile" ;;
+    "i2c/Makefile") CONFIG_FILES="$CONFIG_FILES i2c/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -3973,6 +4204,7 @@ done
 # bizarre bug on SunOS 4.1.3.
 if $ac_need_defaults; then
   test "${CONFIG_FILES+set}" = set || CONFIG_FILES=$config_files
+  test "${CONFIG_HEADERS+set}" = set || CONFIG_HEADERS=$config_headers
 fi
 
 # Have a temporary directory for convenience.  Make it in the build tree
@@ -4160,8 +4392,116 @@ fi
 cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 fi # test -n "$CONFIG_FILES"
 
+# Set up the scripts for CONFIG_HEADERS section.
+# No need to generate them if there are no CONFIG_HEADERS.
+# This happens for instance with `./config.status Makefile'.
+if test -n "$CONFIG_HEADERS"; then
+cat >"$ac_tmp/defines.awk" <<\_ACAWK ||
+BEGIN {
+_ACEOF
 
-eval set X "  :F $CONFIG_FILES      "
+# Transform confdefs.h into an awk script `defines.awk', embedded as
+# here-document in config.status, that substitutes the proper values into
+# config.h.in to produce config.h.
+
+# Create a delimiter string that does not exist in confdefs.h, to ease
+# handling of long lines.
+ac_delim='%!_!# '
+for ac_last_try in false false :; do
+  ac_tt=`sed -n "/$ac_delim/p" confdefs.h`
+  if test -z "$ac_tt"; then
+    break
+  elif $ac_last_try; then
+    as_fn_error $? "could not make $CONFIG_HEADERS" "$LINENO" 5
+  else
+    ac_delim="$ac_delim!$ac_delim _$ac_delim!! "
+  fi
+done
+
+# For the awk script, D is an array of macro values keyed by name,
+# likewise P contains macro parameters if any.  Preserve backslash
+# newline sequences.
+
+ac_word_re=[_$as_cr_Letters][_$as_cr_alnum]*
+sed -n '
+s/.\{148\}/&'"$ac_delim"'/g
+t rset
+:rset
+s/^[	 ]*#[	 ]*define[	 ][	 ]*/ /
+t def
+d
+:def
+s/\\$//
+t bsnl
+s/["\\]/\\&/g
+s/^ \('"$ac_word_re"'\)\(([^()]*)\)[	 ]*\(.*\)/P["\1"]="\2"\
+D["\1"]=" \3"/p
+s/^ \('"$ac_word_re"'\)[	 ]*\(.*\)/D["\1"]=" \2"/p
+d
+:bsnl
+s/["\\]/\\&/g
+s/^ \('"$ac_word_re"'\)\(([^()]*)\)[	 ]*\(.*\)/P["\1"]="\2"\
+D["\1"]=" \3\\\\\\n"\\/p
+t cont
+s/^ \('"$ac_word_re"'\)[	 ]*\(.*\)/D["\1"]=" \2\\\\\\n"\\/p
+t cont
+d
+:cont
+n
+s/.\{148\}/&'"$ac_delim"'/g
+t clear
+:clear
+s/\\$//
+t bsnlc
+s/["\\]/\\&/g; s/^/"/; s/$/"/p
+d
+:bsnlc
+s/["\\]/\\&/g; s/^/"/; s/$/\\\\\\n"\\/p
+b cont
+' <confdefs.h | sed '
+s/'"$ac_delim"'/"\\\
+"/g' >>$CONFIG_STATUS || ac_write_fail=1
+
+cat >>$CONFIG_STATUS <<_ACEOF || ac_write_fail=1
+  for (key in D) D_is_set[key] = 1
+  FS = ""
+}
+/^[\t ]*#[\t ]*(define|undef)[\t ]+$ac_word_re([\t (]|\$)/ {
+  line = \$ 0
+  split(line, arg, " ")
+  if (arg[1] == "#") {
+    defundef = arg[2]
+    mac1 = arg[3]
+  } else {
+    defundef = substr(arg[1], 2)
+    mac1 = arg[2]
+  }
+  split(mac1, mac2, "(") #)
+  macro = mac2[1]
+  prefix = substr(line, 1, index(line, defundef) - 1)
+  if (D_is_set[macro]) {
+    # Preserve the white space surrounding the "#".
+    print prefix "define", macro P[macro] D[macro]
+    next
+  } else {
+    # Replace #undef with comments.  This is necessary, for example,
+    # in the case of _POSIX_SOURCE, which is predefined and required
+    # on some systems where configure will not decide to define it.
+    if (defundef == "undef") {
+      print "/*", prefix defundef, macro, "*/"
+      next
+    }
+  }
+}
+{ print }
+_ACAWK
+_ACEOF
+cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
+  as_fn_error $? "could not setup config headers machinery" "$LINENO" 5
+fi # test -n "$CONFIG_HEADERS"
+
+
+eval set X "  :F $CONFIG_FILES  :H $CONFIG_HEADERS    "
 shift
 for ac_tag
 do
@@ -4369,7 +4709,30 @@ which seems to be undefined.  Please make sure it is defined" >&2;}
   esac \
   || as_fn_error $? "could not create $ac_file" "$LINENO" 5
  ;;
-
+  :H)
+  #
+  # CONFIG_HEADER
+  #
+  if test x"$ac_file" != x-; then
+    {
+      $as_echo "/* $configure_input  */" \
+      && eval '$AWK -f "$ac_tmp/defines.awk"' "$ac_file_inputs"
+    } >"$ac_tmp/config.h" \
+      || as_fn_error $? "could not create $ac_file" "$LINENO" 5
+    if diff "$ac_file" "$ac_tmp/config.h" >/dev/null 2>&1; then
+      { $as_echo "$as_me:${as_lineno-$LINENO}: $ac_file is unchanged" >&5
+$as_echo "$as_me: $ac_file is unchanged" >&6;}
+    else
+      rm -f "$ac_file"
+      mv "$ac_tmp/config.h" "$ac_file" \
+	|| as_fn_error $? "could not create $ac_file" "$LINENO" 5
+    fi
+  else
+    $as_echo "/* $configure_input  */" \
+      && eval '$AWK -f "$ac_tmp/defines.awk"' "$ac_file_inputs" \
+      || as_fn_error $? "could not create -" "$LINENO" 5
+  fi
+ ;;
 
 
   esac
@@ -4415,31 +4778,35 @@ fi
 
 $PACKAGE_NAME is now configured with
 
-   TOBUILD:           $TOBUILD
+   BUILD SERIAL:      $build_serial
+   BUILD PARALLEL:    $build_parallel
+   BUILD I2C:         $build_i2c
+   BUILD TCP:         $build_tcp
+   BUILD USBTMC:      $build_usbtmc
+   BUILD GPIB:        $build_gpib
+   BUILD VXI11:       $build_vxi11
 
-   BUILD GPIB:        $BUILD_GPIB
-       LIBS:          $GPIBLIBS
-
-   BUILD VXI11:       $BUILD_VXI11
-       LIBS:          $VXI11LIBS
-
-   BUILD VISA:        $BUILD_VISA
-       LIBS:          $VISALIBS
+   GPIB LIBS:         $GPIBLIBS
+   VXI11 LIBS:        $RPCLIBS
+   VXI11 INCLUDE:     $RPCINCLUDE
+   VISA LIBS:         $VISALIBS
 
 " >&5
 $as_echo "$as_me:
 
 $PACKAGE_NAME is now configured with
 
-   TOBUILD:           $TOBUILD
+   BUILD SERIAL:      $build_serial
+   BUILD PARALLEL:    $build_parallel
+   BUILD I2C:         $build_i2c
+   BUILD TCP:         $build_tcp
+   BUILD USBTMC:      $build_usbtmc
+   BUILD GPIB:        $build_gpib
+   BUILD VXI11:       $build_vxi11
 
-   BUILD GPIB:        $BUILD_GPIB
-       LIBS:          $GPIBLIBS
-
-   BUILD VXI11:       $BUILD_VXI11
-       LIBS:          $VXI11LIBS
-
-   BUILD VISA:        $BUILD_VISA
-       LIBS:          $VISALIBS
+   GPIB LIBS:         $GPIBLIBS
+   VXI11 LIBS:        $RPCLIBS
+   VXI11 INCLUDE:     $RPCINCLUDE
+   VISA LIBS:         $VISALIBS
 
 " >&6;}
