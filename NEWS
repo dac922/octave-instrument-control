@@ -1,7 +1,5 @@
-Summary of important user-visible changes for octave-instrument-control 0.0.0:
+Summary of important user-visible changes for instrument-control 0.2.0:
 -------------------------------------------------------------------
-
- ** Initial release
 
  ** Support for TCP interface I/O
 
@@ -31,9 +29,45 @@ Summary of important user-visible changes for octave-instrument-control 0.0.0:
         vxi11_write
         vxi11_close
 
+ ** Interfaces are now compiled seperately (i.e. failed compilation of one
+    interface does not mean fail of whole package)
 
- ** octave-instrument-control is intended as test release and
-    playground for new low level I/O functions. If stable enough, the
-    functions will be included to octave-forge's instrument-control,
-    hopefully.
+ ** Parallel and i2c interface support for FreeBSD platform
+
+ ** i2c_write no longer accepts strings for data parameter
+
+
+Summary of important user-visible changes for instrument-control 0.1.0:
+-------------------------------------------------------------------
+
+ ** Initial release
+
+ ** Support for Parallel interface I/O
+
+ ** Support for Serial interface I/O
+
+ ** Support for i2c interface I/O
+
+ ** The following functions are new:
+        serial
+        srl_close
+        srl_read
+        srl_write
+        srl_baudrate
+        srl_flush
+        srl_stopbits
+        srl_bytesize
+        srl_parity
+        srl_timeout
+        i2c
+        i2c_addr
+        i2c_read
+        i2c_close
+        i2c_write
+        parallel
+        pp_ctrl
+        pp_stat
+        pp_close
+        pp_data
+        pp_datadir
 

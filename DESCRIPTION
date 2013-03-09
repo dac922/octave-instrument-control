@@ -1,10 +1,10 @@
-Name: octave-instrument-control
-Version: 0.0.0
-Date: 2012-12-02
+Name: instrument-control
+Version: 0.2.0
+Date: 2013-02-20
 Author: Andrius Sutas <andrius.sutas@gmail.com>, Stefan Mahr <dac922@gmx.de>
-Maintainer: Stefan Mahr <dac922@gmx.de>
-Title: Octave Instrument Control
-Description: Low level I/O functions for tcp, usbtmc, gpib and vxi11 interfaces.
+Maintainer: Andrius Sutas <andrius.sutas@gmail.com>, Stefan Mahr <dac922@gmx.de>
+Title: Instrument Control Toolbox
+Description: Low level I/O functions for serial, i2c, parallel, tcp, gpib, vxi11 and usbtmc interfaces.
 Categories: instrument-control
 Depends: octave (>= 3.2.0)
 Autoload: no
