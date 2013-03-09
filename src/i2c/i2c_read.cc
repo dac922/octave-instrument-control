@@ -1,4 +1,3 @@
-// Copyright (C) 2013   Stefan Mahr     <dac922@gmx.de>
 // Copyright (C) 2012   Andrius Sutas   <andrius.sutas@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
@@ -15,49 +14,50 @@
 // along with this program; if not, see <http://www.gnu.org/licenses/>.
 
 #include <octave/oct.h>
+#include <octave/uint8NDArray.h>
 
 #ifdef HAVE_CONFIG_H
 #include "../config.h"
 #endif
 
-#ifdef BUILD_VXI11
-#include <octave/uint8NDArray.h>
+#ifdef BUILD_I2C
+#include <errno.h>
 
-#include "vxi11_class.h"
+#include "i2c_class.h"
 
 static bool type_loaded = false;
 #endif
 
-DEFUN_DLD (vxi11_read, args, nargout,
+DEFUN_DLD (i2c_read, args, nargout, 
 "-*- texinfo -*-\n\
-@deftypefn {Loadable Function} {[@var{data}, @var{count}] = } vxi11_read (@var{vxi11}, @var{n})\n \
+@deftypefn {Loadable Function} {[@var{data}, @var{count}] = } i2c_read (@var{i2c}, @var{n})\n \
 \n\
-Read from vxi11 slave device.\n \
+Read from i2c slave device.\n \
 \n\
-@var{vxi11} - instance of @var{octave_vxi11} class.@*\
+@var{i2c} - instance of @var{octave_i2c} class.@*\
 @var{n} - number of bytes to attempt to read of type Integer.\n \
 \n\
-The vxi11_read() shall return number of bytes successfully read in @var{count} as Integer and the bytes themselves in @var{data} as uint8 array.\n \
+The i2c_read() shall return number of bytes successfully read in @var{count} as Integer and the bytes themselves in @var{data} as uint8 array.\n \
 @end deftypefn")
 {
-#ifndef BUILD_VXI11
-    error("usbtmc: Your system doesn't support the USBTMC interface");
+#ifndef BUILD_I2C
+    error("i2c: Your system doesn't support the I2C interface");
     return octave_value();
 #else
     if (!type_loaded)
     {
-        octave_vxi11::register_type();
+        octave_i2c::register_type();
         type_loaded = true;
     }
 
-
-    if (args.length() < 1 || args.length() > 2 || args(0).type_id() != octave_vxi11::static_type_id())
+    
+    if (args.length() < 1 || args.length() > 2 || args(0).type_id() != octave_i2c::static_type_id())
     {
         print_usage();
         return octave_value(-1);
     }
 
-    char *buffer = NULL;
+    uint8_t *buffer = NULL;
     unsigned int buffer_len = 1;
 
     if (args.length() > 1)
@@ -71,34 +71,32 @@ The vxi11_read() shall return number of bytes successfully read in @var{count} a
         buffer_len = args(1).int_value();
     }
 
-    buffer = new char [buffer_len + 1];
+    buffer = new uint8_t [buffer_len + 1];
 
     if (buffer == NULL)
     {
-        error("vxi11_read: cannot allocate requested memory...");
-        return octave_value(-1);
+        error("i2c_read: cannot allocate requested memory: %s\n", strerror(errno));
+        return octave_value(-1);  
     }
 
-    octave_vxi11* vxi11 = NULL;
+    octave_i2c* i2c = NULL;
 
     const octave_base_value& rep = args(0).get_rep();
-    vxi11 = &((octave_vxi11 &)rep);
+    i2c = &((octave_i2c &)rep);
 
     int retval;
-
-    retval = vxi11->read(buffer, buffer_len);
-
+    
+    retval = i2c->read(buffer, buffer_len);
+    
     octave_value_list return_list;
-
-    uint8NDArray data( dim_vector(1, (retval > 0) ? retval : 0) );
-
+    uint8NDArray data( dim_vector(1, retval) );
+    
     for (int i = 0; i < retval; i++)
-        data(i) = static_cast<uint8_t>(buffer[i]);
+        data(i) = buffer[i];
 
     return_list(0) = data;
-    return_list(1) = retval;
-
-
+    return_list(1) = retval; 
+        
     delete[] buffer;
 
     return return_list;

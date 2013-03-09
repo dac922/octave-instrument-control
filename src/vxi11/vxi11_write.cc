@@ -16,9 +16,15 @@
 
 #include <octave/oct.h>
 
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif
+
+#ifdef BUILD_VXI11
 #include "vxi11_class.h"
 
 static bool type_loaded = false;
+#endif
 
 DEFUN_DLD (vxi11_write, args, nargout,
 "-*- texinfo -*-\n\
@@ -32,6 +38,10 @@ Write data to a vxi11 slave device.\n \
 Upon successful completion, vxi11_write() shall return the number of bytes written as the result @var{n}.\n \
 @end deftypefn")
 {
+#ifndef BUILD_VXI11
+    error("usbtmc: Your system doesn't support the USBTMC interface");
+    return octave_value();
+#else
     if (!type_loaded)
     {
         octave_vxi11::register_type();
@@ -77,4 +87,5 @@ Upon successful completion, vxi11_write() shall return the number of bytes writt
     }
 
     return octave_value(retval);
+#endif
 }

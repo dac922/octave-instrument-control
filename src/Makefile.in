@@ -1,5 +1,5 @@
 
-SUBDIRS = usbtmc tcp gpib vxi11
+SUBDIRS = serial parallel i2c usbtmc tcp gpib vxi11
 
 MKOCTFILE ?= mkoctfile
 
@@ -11,12 +11,12 @@ all:
 	@for dir in $(SUBDIRS); do $(MAKE) -i -C $$dir; done
 	
 clean:
-	 @for dir in $(SUBDIRS); do $(MAKE) -i -C $$dir clean; done
+	@for dir in $(SUBDIRS); do $(MAKE) -i -C $$dir clean; done
 
 realclean:
-	 rm -f *.oct
+	rm -f *.oct
 
 distclean: realclean
-	 @for dir in $(SUBDIRS); do $(MAKE) -i -C $$dir distclean; done
-	 rm -rf autom4te.cache
-	 rm -f Makefile config.status config.log config.h configure
+	@for dir in $(SUBDIRS); do $(MAKE) -i -C $$dir distclean; done
+	rm -rf autom4te.cache
+	rm -f Makefile config.status config.log config.h configure

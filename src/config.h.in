@@ -1,0 +1,23 @@
+/* build SERIAL interface functions */
+#undef BUILD_SERIAL
+
+/* build I2C interface functions */
+#undef BUILD_I2C
+
+/* build PARALLEL interface functions */
+#undef BUILD_PARALLEL
+
+/* build GPIB interface functions */
+#undef BUILD_GPIB
+
+/* build TCP interface functions */
+#undef BUILD_TCP
+
+/* build USBTMC interface functions */
+#undef BUILD_USBTMC
+
+/* build VISA interface functions */
+#undef BUILD_VISA
+
+/* build VXI11 interface functions */
+#undef BUILD_VXI11

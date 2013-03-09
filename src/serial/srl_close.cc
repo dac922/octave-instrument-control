@@ -1,4 +1,3 @@
-// Copyright (C) 2013   Stefan Mahr     <dac922@gmx.de>
 // Copyright (C) 2012   Andrius Sutas   <andrius.sutas@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
@@ -20,44 +19,43 @@
 #include "../config.h"
 #endif
 
-#ifdef BUILD_USBTMC
-#include "usbtmc_class.h"
+#ifdef BUILD_SERIAL
+#include "serial_class.h"
 
 static bool type_loaded = false;
 #endif
 
-DEFUN_DLD (usbtmc_close, args, nargout,
+DEFUN_DLD (srl_close, args, nargout, 
 "-*- texinfo -*-\n\
-@deftypefn {Loadable Function} {} usbtmc_close (@var{usbtmc})\n \
+@deftypefn {Loadable Function} {} srl_close (@var{serial})\n \
 \n\
 Close the interface and release a file descriptor.\n \
 \n\
-@var{usbtmc} - instance of @var{octave_usbtmc} class.@*\
+@var{serial} - instance of @var{octave_serial} class.@*\
 @end deftypefn")
 {
-#ifndef BUILD_USBTMC
-    error("usbtmc: Your system doesn't support the USBTMC interface");
+#ifndef BUILD_SERIAL
+    error("serial: Your system doesn't support the SERIAL interface");
     return octave_value();
 #else
     if (!type_loaded)
     {
-        octave_usbtmc::register_type();
+        octave_serial::register_type();
         type_loaded = true;
     }
-
-
-    if (args.length() != 1 || args(0).type_id() != octave_usbtmc::static_type_id())
+    
+    if (args.length() != 1 || args(0).type_id() != octave_serial::static_type_id())
     {
         print_usage();
         return octave_value(-1);
     }
-
-    octave_usbtmc* usbtmc = NULL;
+    
+    octave_serial* serial = NULL;
 
     const octave_base_value& rep = args(0).get_rep();
-    usbtmc = &((octave_usbtmc &)rep);
+    serial = &((octave_serial &)rep);
 
-    usbtmc->close();
+    serial->close();
 
     return octave_value();
 #endif

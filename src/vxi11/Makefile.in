@@ -8,10 +8,19 @@ RPCGEN     ?= rpcgen
 CFLAGS      = @RPCINCLUDE@ @DEFS@
 LFLAGS      = @RPCLIBS@
 
+BUILD_VXI11 = @BUILD_VXI11@
+
+ifneq ($(BUILD_VXI11),1)
+VXI =
+OBJ =
+endif
+
 all: $(VXI) $(OBJ) $(OCT) 
 
+ifeq ($(BUILD_VXI11),1)
 vxi11.h vxi11_clnt.c vxi11_xdr.c : vxi11.x
 	$(RPCGEN) -M vxi11.x
+endif
 
 %.o: %.c
 	$(MKOCTFILE) $(CFLAGS) $(RPCINCLUDE) -c $^

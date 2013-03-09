@@ -1,4 +1,3 @@
-// Copyright (C) 2013   Stefan Mahr     <dac922@gmx.de>
 // Copyright (C) 2012   Andrius Sutas   <andrius.sutas@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
@@ -20,37 +19,38 @@
 #include "../config.h"
 #endif
 
-#ifdef BUILD_VXI11
-#include <errno.h>
+#ifdef BUILD_I2C
+#include <fcntl.h>
 
 using std::string;
 
-#include "vxi11_class.h"
+#include "i2c_class.h"
 
 static bool type_loaded = false;
 #endif
 
-DEFUN_DLD (vxi11, args, nargout,
+DEFUN_DLD (i2c, args, nargout, 
         "-*- texinfo -*-\n\
-@deftypefn {Loadable Function} {@var{vxi11} = } vxi11 (@var{ip})\n \
+@deftypefn {Loadable Function} {@var{i2c} = } i2c ([@var{path}], [@var{address}])\n \
 \n\
-Open vxi11 interface.\n \
+Open i2c interface.\n \
 \n\
-@var{path} - the ip address of type String. If omitted defaults to '127.0.0.1'. @*\
+@var{path} - the interface path of type String. If omitted defaults to '/dev/i2c-0'. @*\
+@var{address} - the slave device address. If omitted must be set using i2c_addr() call.\n \
 \n\
-The vxi11() shall return instance of @var{octave_vxi11} class as the result @var{vxi11}.\n \
+The i2c() shall return instance of @var{octave_i2c} class as the result @var{i2c}.\n \
 @end deftypefn")
 {
-#ifndef BUILD_VXI11
-    error("usbtmc: Your system doesn't support the USBTMC interface");
+#ifndef BUILD_I2C
+    error("i2c: Your system doesn't support the I2C interface");
     return octave_value();
 #else
     if (!type_loaded)
     {
-        octave_vxi11::register_type();
+        octave_i2c::register_type();
         type_loaded = true;
     }
-
+    
     // Do not open interface if return value is not assigned
     if (nargout != 1)
     {
@@ -59,7 +59,9 @@ The vxi11() shall return instance of @var{octave_vxi11} class as the result @var
     }
 
     // Default values
-    string path("127.0.0.1");
+    int oflags = O_RDWR;
+    string path("/dev/i2c-0");
+    int addr = -1;
 
     // Parse the function arguments
     if (args.length() > 0)
@@ -76,14 +78,29 @@ The vxi11() shall return instance of @var{octave_vxi11} class as the result @var
 
     }
 
-    // Open the interface
-    octave_vxi11* retval = new octave_vxi11;
-
-    if (retval->open(path) < 0)
+    // is_float_type() is or'ed to allow expression like ("", 123), without user
+    // having to use ("", int32(123)), as we still only take "int_value"
+    if (args.length() > 1)
     {
-        error("vxi11: Error opening the interface: %s\n", strerror(errno));
-        return octave_value();
+        if (args(1).is_integer_type() || args(1).is_float_type())
+        {
+            addr = args(1).int_value();
+        }
+        else
+        {
+            print_usage();
+            return octave_value();
+        }
     }
+
+    octave_i2c* retval = new octave_i2c();
+
+    // Open the interface
+    if (retval->open(path, oflags) < 0)
+        return octave_value();
+
+    if (addr > 0)
+        retval->set_addr(addr);
 
     return octave_value(retval);
 #endif

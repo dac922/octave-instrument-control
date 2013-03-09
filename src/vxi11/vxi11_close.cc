@@ -16,9 +16,15 @@
 
 #include <octave/oct.h>
 
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif
+
+#ifdef BUILD_VXI11
 #include "vxi11_class.h"
 
 static bool type_loaded = false;
+#endif
 
 DEFUN_DLD (vxi11_close, args, nargout,
 "-*- texinfo -*-\n\
@@ -29,6 +35,10 @@ Close the interface and release a file descriptor.\n \
 @var{vxi11} - instance of @var{octave_vxi11} class.@*\
 @end deftypefn")
 {
+#ifndef BUILD_VXI11
+    error("usbtmc: Your system doesn't support the USBTMC interface");
+    return octave_value();
+#else
     if (!type_loaded)
     {
         octave_vxi11::register_type();
@@ -50,4 +60,5 @@ Close the interface and release a file descriptor.\n \
     vxi11->close();
 
     return octave_value();
+#endif
 }

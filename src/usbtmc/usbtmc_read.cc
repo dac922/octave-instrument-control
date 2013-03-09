@@ -20,7 +20,7 @@
 #include "../config.h"
 #endif
 
-#ifdef BUILD_TCP
+#ifdef BUILD_USBTMC
 #include <octave/uint8NDArray.h>
 
 #include <errno.h>

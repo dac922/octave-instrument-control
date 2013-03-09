@@ -1,4 +1,3 @@
-// Copyright (C) 2013   Stefan Mahr     <dac922@gmx.de>
 // Copyright (C) 2012   Andrius Sutas   <andrius.sutas@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
@@ -20,74 +19,67 @@
 #include "../config.h"
 #endif
 
-#ifdef BUILD_USBTMC
+#ifdef BUILD_I2C
 #include <errno.h>
 
-#include "usbtmc_class.h"
+#include "i2c_class.h"
 
 static bool type_loaded = false;
 #endif
 
-DEFUN_DLD (usbtmc_write, args, nargout,
+DEFUN_DLD (i2c_write, args, nargout, 
         "-*- texinfo -*-\n\
-@deftypefn {Loadable Function} {@var{n} = } usbtmc_write (@var{usbtmc}, @var{data})\n \
+@deftypefn {Loadable Function} {@var{n} = } i2c_write (@var{i2c}, @var{data})\n \
 \n\
-Write data to a usbtmc slave device.\n \
+Write data to a i2c slave device.\n \
 \n\
-@var{usbtmc} - instance of @var{octave_usbtmc} class.@*\
+@var{i2c} - instance of @var{octave_i2c} class.@*\
 @var{data} - data, of type uint8, to be written to the slave device.\n \
 \n\
-Upon successful completion, usbtmc_write() shall return the number of bytes written as the result @var{n}.\n \
+Upon successful completion, i2c_write() shall return the number of bytes written as the result @var{n}.\n \
 @end deftypefn")
 {
-#ifndef BUILD_USBTMC
-    error("usbtmc: Your system doesn't support the USBTMC interface");
+#ifndef BUILD_I2C
+    error("i2c: Your system doesn't support the I2C interface");
     return octave_value();
 #else
     if (!type_loaded)
     {
-        octave_usbtmc::register_type();
+        octave_i2c::register_type();
         type_loaded = true;
     }
 
-    if (args.length() != 2 || args(0).type_id() != octave_usbtmc::static_type_id())
+    if (args.length() != 2 || args(0).type_id() != octave_i2c::static_type_id()) 
     {
         print_usage();
         return octave_value(-1);
     }
 
-    octave_usbtmc* usbtmc = NULL;
+    octave_i2c* i2c = NULL;
     int retval;
 
     const octave_base_value& rep = args(0).get_rep();
-    usbtmc = &((octave_usbtmc &)rep);
+    i2c = &((octave_i2c &)rep);
 
-    const octave_base_value& data = args(1).get_rep();
-
-    if (data.is_string())
-    {
-        string buf = data.string_value();
-        retval = usbtmc->write((uint8_t*)buf.c_str(), buf.length());
-    }
-    else if (data.byte_size() == data.numel())
-    {
-        NDArray dtmp = data.array_value();
-        uint8_t *buf = NULL;
-        buf = new uint8_t[dtmp.length()];
+    if (args(1).byte_size() == args(1).numel()) // uint8_t
+            {
+        NDArray data = args(1).array_value();
+        uint8_t *buf = NULL; 
+        buf = new uint8_t[data.length()];
 
         if (buf == NULL)
         {
-            error("usbtmc_write: cannot allocate requested memory: %s\n", strerror(errno));
-            return octave_value(-1);
+            error("i2c_write: cannot allocate requested memory: %s\n", strerror(errno));
+            return octave_value(-1);  
         }
 
-        for (int i = 0; i < dtmp.length(); i++)
-            buf[i] = static_cast<uint8_t>(dtmp(i));
+        for (int i = 0; i < data.length(); i++)
+            buf[i] =  static_cast<uint8_t>(data(i));
 
-        retval = usbtmc->write(buf, dtmp.length());
+        retval = i2c->write(buf, data.length());
 
         delete[] buf;
-    }
+            }
     else
     {
         print_usage();

@@ -17,15 +17,26 @@ if [test $HAVE_MKOCTFILE = "no"]; then
   AC_MSG_ERROR([mkoctfile required to install $PACKAGE_NAME])
 fi
 
+build_parallel=no
+build_serial=no
+build_i2c=no
 build_usbtmc=no
 build_tcp=no
 build_gpib=no
 build_vxi11=no
 build_visa=no
 
-# Howto check if usbtmc is available?
-build_usbtmc=yes
+# check for i2c
+# if linux/i2c-dev.h exists we are probably under linux, so build usbtmc as well
+AC_CHECK_HEADERS([linux/i2c-dev.h],[build_i2c=yes build_usbtmc=yes])
+AC_CHECK_HEADERS([dev/iicbus/iic.h],[build_i2c=yes])
 
+# check for serial
+AC_CHECK_HEADERS([termios.h],[build_serial=yes])
+
+# check for parallel
+AC_CHECK_HEADERS([linux/parport.h linux/ppdev.h],[build_parallel=yes])
+AC_CHECK_HEADERS([dev/ppbus/ppi.h dev/ppbus/ppbconf.h],[build_parallel=yes])
 
 # build tcp, available for most platforms
 AC_CHECK_HEADERS([sys/socket.h],[build_tcp=yes])
@@ -77,6 +88,18 @@ fi
 
 #
 
+if test $build_parallel = yes; then
+  AC_DEFINE([BUILD_PARALLEL], [], [build PARALLEL interface functions])
+fi
+
+if test $build_serial = yes; then
+  AC_DEFINE([BUILD_SERIAL], [], [build SERIAL interface functions])
+fi
+
+if test $build_i2c = yes; then
+  AC_DEFINE([BUILD_I2C], [], [build I2C interface functions])
+fi
+
 if test $build_usbtmc = yes; then
   AC_DEFINE([BUILD_USBTMC], [], [build USBTMC interface functions])
 fi
@@ -91,6 +114,7 @@ fi
 
 if test $build_vxi11 = yes; then
   AC_DEFINE([BUILD_VXI11], [], [build VXI11 interface functions])
+  AC_SUBST([BUILD_VXI11], [1], [build VXI11 interface functions])
 fi
 
 if test $build_visa = yes; then
@@ -100,13 +124,16 @@ fi
 
 # all done
 
-AC_CONFIG_FILES([Makefile gpib/Makefile tcp/Makefile vxi11/Makefile usbtmc/Makefile])
+AC_CONFIG_FILES([Makefile gpib/Makefile tcp/Makefile vxi11/Makefile usbtmc/Makefile serial/Makefile parallel/Makefile i2c/Makefile])
 AC_OUTPUT
 
 AC_MSG_NOTICE([
 
 $PACKAGE_NAME is now configured with
 
+   BUILD SERIAL:      $build_serial
+   BUILD PARALLEL:    $build_parallel
+   BUILD I2C:         $build_i2c
    BUILD TCP:         $build_tcp
    BUILD USBTMC:      $build_usbtmc
    BUILD GPIB:        $build_gpib

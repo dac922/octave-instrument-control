@@ -1,4 +1,3 @@
-// Copyright (C) 2013   Stefan Mahr     <dac922@gmx.de>
 // Copyright (C) 2012   Andrius Sutas   <andrius.sutas@gmail.com>
 //
 // This program is free software; you can redistribute it and/or modify
@@ -20,34 +19,53 @@
 #include "../config.h"
 #endif
 
-#ifdef BUILD_USBTMC
+#ifdef BUILD_PARALLEL
+#include <octave/ov-int32.h>
+
+#include <iostream>
+#include <string>
+#include <algorithm>
+
+#ifndef __WIN32__
+#include <errno.h>
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
+#endif
 
 using std::string;
 
-#include "usbtmc_class.h"
+#include "parallel_class.h"
 
 static bool type_loaded = false;
 #endif
 
-DEFUN_DLD (usbtmc, args, nargout,
-        "-*- texinfo -*-\n\
-@deftypefn {Loadable Function} {@var{usbtmc} = } usbtmc (@var{path})\n \
+DEFUN_DLD (parallel, args, nargout, 
+"-*- texinfo -*-\n\
+@deftypefn {Loadable Function} {@var{parallel} = } parallel ([@var{path}], [@var{direction}])\n \
 \n\
-Open usbtmc interface.\n \
+Open Parallel interface.\n \
 \n\
-@var{path} - the interface path of type String. If omitted defaults to '/dev/usbtmc0'. @*\
+@var{path} - the interface path of type String. If omitted defaults to '/dev/parport0'.@*\
+@var{direction} - the direction of interface drivers of type Integer, see: PP_DATADIR for more info. \
+If omitted defaults to 1 (Input).\n \
 \n\
-The usbtmc() shall return instance of @var{octave_usbtmc} class as the result @var{usbtmc}.\n \
+The parallel() shall return instance of @var{octave_parallel} class as the result @var{parallel}.\n \
 @end deftypefn")
 {
-#ifndef BUILD_USBTMC
-    error("usbtmc: Your system doesn't support the USBTMC interface");
+#ifndef BUILD_PARALLEL
+    error("parallel: Your system doesn't support the GPIB interface");
     return octave_value();
 #else
     if (!type_loaded)
     {
-        octave_usbtmc::register_type();
+        octave_parallel::register_type();
         type_loaded = true;
     }
 
@@ -60,7 +78,8 @@ The usbtmc() shall return instance of @var{octave_usbtmc} class as the result @v
 
     // Default values
     int oflags = O_RDWR;
-    string path("/dev/usbtmc0");
+    int dir = 1; // Input
+    string path("/dev/parport0");
 
     // Parse the function arguments
     if (args.length() > 0)
@@ -74,14 +93,31 @@ The usbtmc() shall return instance of @var{octave_usbtmc} class as the result @v
             print_usage();
             return octave_value();
         }
-
     }
 
-    octave_usbtmc* retval = new octave_usbtmc();
+    // is_float_type() is or'ed to allow expression like ("", 123), without user
+    // having to use ("", int32(123)), as we still only take "int_value"
+    if (args.length() > 1)
+    {
+        if (args(1).is_integer_type() || args(1).is_float_type())
+        {
+            dir = args(1).int_value();
+        }
+        else
+        {
+            print_usage();
+            return octave_value();
+        }
+    }
+
+    octave_parallel* retval = new octave_parallel();
 
     // Open the interface
     if (retval->open(path, oflags) < 0)
         return octave_value();
+
+    // Set direction
+    retval->set_datadir(dir);
 
     return octave_value(retval);
 #endif

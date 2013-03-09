@@ -20,7 +20,7 @@
 #include "../config.h"
 #endif
 
-#ifdef BUILD_TCP
+#ifdef BUILD_USBTMC
 #include <errno.h>
 #include <unistd.h>
 #include <fcntl.h>
