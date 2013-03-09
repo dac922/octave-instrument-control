@@ -16,6 +16,7 @@ all: $(OBJ) $(OCT)
 clean:
 	rm -f *.oct *.o
 
-distcealn: clean
+distclean: clean
+	rm Makefile
 
 .PHONY: all clean
