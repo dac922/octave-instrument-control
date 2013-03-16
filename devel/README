@@ -1,0 +1,13 @@
+This directory contains functions that have been used to develop some of
+the image processing functions in the parent directory. This files are
+not needed at runtime for them to work, so they are not installed.
+
+They are helpul, though, to know how functions have been developped
+and for debugging.
+
+The function deriche has been removed from the package due to its non-standard
+license. Its original author and copyright owner does not reply to e-mails
+christian.kotz@gmx.net or facebook messages http://www.facebook.com/KoraxKorakos
+
+The deriche function would ideally be implemented again as an edge option,
+possible as part of the canny option since they are very similar.
