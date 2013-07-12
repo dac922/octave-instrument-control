@@ -1,4 +1,4 @@
-OCT := gpib.oct gpib_timeout.oct gpib_write.oct gpib_close.oct gpib_read.oct
+OCT := gpib.oct gpib_timeout.oct gpib_write.oct gpib_close.oct gpib_read.oct gpib_spoll.oct
 OBJ := gpib_class.o
 
 MKOCTFILE  ?= mkoctfile

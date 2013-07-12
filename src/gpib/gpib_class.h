@@ -35,6 +35,8 @@ public:
 
     int read(uint8_t*, unsigned int);
 
+    int spoll(bool*);
+
     int open(int, int, int, int, int, int);
     int close();
 

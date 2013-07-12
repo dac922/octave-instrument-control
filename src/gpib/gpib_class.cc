@@ -203,7 +203,7 @@ int octave_gpib::write(uint8_t *buf, unsigned int len)
     fd = ibdev(this->minor, this->gpibid, this->sad, this->timeout, this->send_eoi, this->eos_mode);
     if (fd < 0)
     {
-        error("gpib_read: error opening gpib device...");
+        error("gpib_write: error opening gpib device...");
         return -1;
     }
 
@@ -219,6 +219,39 @@ int octave_gpib::write(uint8_t *buf, unsigned int len)
     ibonl(fd,0);
 
     return gperr;
+}
+
+int octave_gpib::spoll(bool *rqs)
+{
+    int gperr,fd;
+    char buf;
+
+    if (this->minor < 0)
+    {
+        error("gpib_spoll: Interface must be opened first...");
+        return -1;
+    }
+
+    fd = ibdev(this->minor, this->gpibid, this->sad, this->timeout, this->send_eoi, this->eos_mode);
+    if (fd < 0)
+    {
+        error("gpib_spoll: error opening gpib device...");
+        return -1;
+    }
+
+    gperr = ibrsp(fd,&buf);
+    if (gperr & ERR) {
+        error ("gpib_spoll: some error occured: %d",  ThreadIberr ());
+        return -1;
+    }
+    //warning ("aaa: %X - %X",gperr, buf);
+    
+    *rqs = (buf & 0x40);
+
+    ibonl(fd,0);
+
+    return gperr;
+
 }
 
 int octave_gpib::set_timeout(int timeout)
