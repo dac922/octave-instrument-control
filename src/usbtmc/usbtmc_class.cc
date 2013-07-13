@@ -116,5 +116,5 @@ int octave_usbtmc::close()
     }
 
     return retval;
-#endif
 }
+#endif
