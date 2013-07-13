@@ -61,7 +61,7 @@ Upon successful completion, i2c_write() shall return the number of bytes written
     const octave_base_value& rep = args(0).get_rep();
     i2c = &((octave_i2c &)rep);
 
-    if (args(1).byte_size() == args(1).numel()) // uint8_t
+    if (args(1).is_uint8_type ()) // uint8_t
             {
         NDArray data = args(1).array_value();
         uint8_t *buf = NULL; 

@@ -64,7 +64,7 @@ Upon successful completion, tcp_write() shall return the number of bytes written
     {
         retval = tcp->write(args(1).string_value());
     }
-    else if (args(1).byte_size() == args(1).numel()) // uint8_t
+    else if (args(1).is_uint8_type ())
     {
         NDArray data = args(1).array_value();
         uint8_t *buf = NULL;

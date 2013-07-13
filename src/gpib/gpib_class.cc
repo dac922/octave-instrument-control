@@ -76,7 +76,7 @@ int octave_gpib::open(int minor, int gpibid, int sad, int timeout, int send_eoi,
 int octave_gpib::read(uint8_t *buf, unsigned int len)
 {
     int gperr,fd;
-    int bytes_read = 0, read_retval = -1;
+    int bytes_read = 0;
 
     if (this->minor < 0)
     {

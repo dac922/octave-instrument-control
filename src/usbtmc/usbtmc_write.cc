@@ -69,7 +69,7 @@ Upon successful completion, usbtmc_write() shall return the number of bytes writ
         string buf = data.string_value();
         retval = usbtmc->write((uint8_t*)buf.c_str(), buf.length());
     }
-    else if (data.byte_size() == data.numel())
+    else if (data.is_uint8_type ())
     {
         NDArray dtmp = data.array_value();
         uint8_t *buf = NULL;

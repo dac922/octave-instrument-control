@@ -68,7 +68,7 @@ Upon successful completion, vxi11_write() shall return the number of bytes writt
         string buf = data.string_value();
         retval = vxi11->write(buf.c_str(), buf.length());
     }
-    else if (data.byte_size() == data.numel())
+    else if (data.is_uint8_type ())
     {
         NDArray dtmp = data.array_value();
         char* buf = new char [dtmp.length()];

@@ -125,7 +125,8 @@ int octave_serial::read(uint8_t *buf, unsigned int len)
         return 0;
     }
 
-    int bytes_read = 0, read_retval = -1;
+    size_t bytes_read = 0;
+    ssize_t read_retval = -1;
 
     // While not interrupted in blocking mode
     while (!read_interrupt) 
