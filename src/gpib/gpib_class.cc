@@ -73,7 +73,7 @@ int octave_gpib::open(int minor, int gpibid, int sad, int timeout, int send_eoi,
     return 1;
 }
 
-int octave_gpib::read(uint8_t *buf, unsigned int len)
+int octave_gpib::read(uint8_t *buf, unsigned int len, bool *eoi)
 {
     int gperr,fd;
     int bytes_read = 0;
@@ -221,10 +221,9 @@ int octave_gpib::write(uint8_t *buf, unsigned int len)
     return gperr;
 }
 
-int octave_gpib::spoll(bool *rqs)
+int octave_gpib::spoll(char *rqs)
 {
     int gperr,fd;
-    char buf;
 
     if (this->minor < 0)
     {
@@ -239,14 +238,70 @@ int octave_gpib::spoll(bool *rqs)
         return -1;
     }
 
-    gperr = ibrsp(fd,&buf);
+    gperr = ibrsp(fd,rqs);
     if (gperr & ERR) {
         error ("gpib_spoll: some error occured: %d",  ThreadIberr ());
         return -1;
     }
     //warning ("aaa: %X - %X",gperr, buf);
-    
-    *rqs = (buf & 0x40);
+
+    ibonl(fd,0);
+
+    return gperr;
+
+}
+
+int octave_gpib::trigger()
+{
+    int gperr,fd;
+
+    if (this->minor < 0)
+    {
+        error("gpib_trigger: Interface must be opened first...");
+        return -1;
+    }
+
+    fd = ibdev(this->minor, this->gpibid, this->sad, this->timeout, this->send_eoi, this->eos_mode);
+    if (fd < 0)
+    {
+        error("gpib_trigger: error opening gpib device...");
+        return -1;
+    }
+
+    gperr = ibtrg(fd);
+    if (gperr & ERR) {
+        error ("gpib_trigger: some error occured: %d",  ThreadIberr ());
+        return -1;
+    }
+
+    ibonl(fd,0);
+
+    return gperr;
+
+}
+
+int octave_gpib::cleardevice()
+{
+    int gperr,fd;
+
+    if (this->minor < 0)
+    {
+        error("gpib_clear: Interface must be opened first...");
+        return -1;
+    }
+
+    fd = ibdev(this->minor, this->gpibid, this->sad, this->timeout, this->send_eoi, this->eos_mode);
+    if (fd < 0)
+    {
+        error("gpib_clear: error opening gpib device...");
+        return -1;
+    }
+
+    gperr = ibclr(fd);
+    if (gperr & ERR) {
+        error ("gpib_clear: some error occured: %d",  ThreadIberr ());
+        return -1;
+    }
 
     ibonl(fd,0);
 

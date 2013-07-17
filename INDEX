@@ -40,6 +40,14 @@ GPIB
   gpib_write
   gpib_timeout
   gpib_close
+  fopen
+  fclose
+  fwrite
+  fprintf
+  fscanf
+  spoll
+  trigger
+  clrdevice
 VXI11
   vxi11
   vxi11_read

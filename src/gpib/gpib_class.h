@@ -33,9 +33,11 @@ public:
     int write(string);
     int write(uint8_t*, unsigned int);
 
-    int read(uint8_t*, unsigned int);
+    int read(uint8_t*, unsigned int, bool*);
 
-    int spoll(bool*);
+    int spoll(char*);
+    int trigger();
+    int cleardevice();
 
     int open(int, int, int, int, int, int);
     int close();

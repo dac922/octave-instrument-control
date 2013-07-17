@@ -30,15 +30,14 @@ static bool type_loaded = false;
 #endif
 
 
-DEFUN_DLD (gpib_spoll, args, nargout,
+DEFUN_DLD (__gpib_trigger__, args, nargout,
         "-*- texinfo -*-\n\
-@deftypefn {Loadable Function} {@var{sb} = } gpib_spoll (@var{gpib})\n \
+@deftypefn {Loadable Function} {} __gpib_trigger__ (@var{gpib})\n \
 \n\
-serial poll gpib interface.\n \
+triggers gpib device.\n \
 \n\
 @var{gpib} - instance of @var{octave_gpib} class.@*\
 \n\
-Upon successful completion, gpib_spoll() shall return the status byte @var{sb}.\n \
 @end deftypefn")
 {
 #ifndef BUILD_GPIB
@@ -63,13 +62,8 @@ Upon successful completion, gpib_spoll() shall return the status byte @var{sb}.\
     const octave_base_value& rep = args(0).get_rep();
     gpib = &((octave_gpib &)rep);
 
-    bool rqs;
+    retval = gpib->trigger ();
 
-    retval = gpib->spoll(&rqs);
-    if (retval == -1)
-        return octave_value();
-
-    return octave_value(rqs);
-
+    return octave_value();
 #endif
 }

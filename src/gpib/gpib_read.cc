@@ -40,14 +40,15 @@ void read_sighandler(int sig)
 
 DEFUN_DLD (gpib_read, args, nargout,
         "-*- texinfo -*-\n\
-@deftypefn {Loadable Function} {[@var{data}, @var{count}] = } gpib_read (@var{gpib}, @var{n})\n \
+@deftypefn {Loadable Function} {[@var{data}, @var{count}, @var{eoi}] = } gpib_read (@var{gpib}, @var{n})\n \
 \n\
 Read from gpib interface.\n \
 \n\
 @var{gpib} - instance of @var{octave_gpib} class.@*\
 @var{n} - number of bytes to attempt to read of type Integer.\n \
 \n\
-The gpib_read() shall return number of bytes successfully read in @var{count} as Integer and the bytes themselves in @var{data} as uint8 array.\n \
+The gpib_read() shall return number of bytes successfully read in @var{count} as Integer and the bytes themselves in @var{data} as uint8 array. \
+@var{eoi} indicates read operation complete \n \
 @end deftypefn")
 {
 #ifndef BUILD_GPIB
@@ -95,7 +96,8 @@ The gpib_read() shall return number of bytes successfully read in @var{count} as
     read_interrupt = false;
 
     // Read data
-    int bytes_read = gpib->read(buffer, buffer_len);
+    bool eoi;
+    int bytes_read = gpib->read(buffer, buffer_len, &eoi);
 
     // Restore default signal handling
     // TODO: a better way?
@@ -110,6 +112,7 @@ The gpib_read() shall return number of bytes successfully read in @var{count} as
 
     return_list(0) = data;
     return_list(1) = bytes_read;
+    return_list(1) = eoi;
 
     delete[] buffer;
 

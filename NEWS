@@ -1,3 +1,17 @@
+Summary of important user-visible changes for instrument-control 0.2.1:
+-------------------------------------------------------------------
+
+  ** GPIB: New functions:
+        spoll
+        trigger
+        clrdevice
+        fopen
+        fclose
+        fwrite
+        fprintf
+        fscanf
+
+
 Summary of important user-visible changes for instrument-control 0.2.0:
 -------------------------------------------------------------------
 
