@@ -32,8 +32,8 @@ DEFUN_DLD (tcp, args, nargout,
 \n\
 Open tcp interface.\n \
 \n\
-@var{ipaddress} - the ip address of type String. If omitted defaults to '127.0.0.1'. @*\
-@var{port} - the port number to connect. If omitted defaults to 23. @*\
+@var{ipaddress} - the ip address of type String. If omitted defaults to '127.0.0.1'.@* \
+@var{port} - the port number to connect. If omitted defaults to 23.@* \
 @var{timeout} - the interface timeout value. If omitted defaults to blocking call.\n \
 \n\
 The tcp() shall return instance of @var{octave_tcp} class as the result @var{tcp}.\n \

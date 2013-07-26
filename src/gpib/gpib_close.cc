@@ -32,7 +32,7 @@ DEFUN_DLD (gpib_close, args, nargout,
 \n\
 Close the interface and release a file descriptor.\n \
 \n\
-@var{gpib} - instance of @var{octave_gpib} class.@*\
+@var{gpib} - instance of @var{octave_gpib} class.\n \
 @end deftypefn")
 {
 #ifndef BUILD_GPIB

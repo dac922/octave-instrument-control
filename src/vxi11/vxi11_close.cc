@@ -32,7 +32,7 @@ DEFUN_DLD (vxi11_close, args, nargout,
 \n\
 Close the interface and release a file descriptor.\n \
 \n\
-@var{vxi11} - instance of @var{octave_vxi11} class.@*\
+@var{vxi11} - instance of @var{octave_vxi11} class.\n \
 @end deftypefn")
 {
 #ifndef BUILD_VXI11

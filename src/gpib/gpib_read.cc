@@ -44,10 +44,10 @@ DEFUN_DLD (gpib_read, args, nargout,
 \n\
 Read from gpib interface.\n \
 \n\
-@var{gpib} - instance of @var{octave_gpib} class.@*\
+@var{gpib} - instance of @var{octave_gpib} class.@* \
 @var{n} - number of bytes to attempt to read of type Integer.\n \
 \n\
-The gpib_read() shall return number of bytes successfully read in @var{count} as Integer and the bytes themselves in @var{data} as uint8 array. \
+The gpib_read() shall return number of bytes successfully read in @var{count} as Integer and the bytes themselves in @var{data} as uint8 array.\n \
 @var{eoi} indicates read operation complete \n \
 @end deftypefn")
 {

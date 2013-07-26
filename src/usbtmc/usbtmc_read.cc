@@ -36,7 +36,7 @@ DEFUN_DLD (usbtmc_read, args, nargout,
 \n\
 Read from usbtmc slave device.\n \
 \n\
-@var{usbtmc} - instance of @var{octave_usbtmc} class.@*\
+@var{usbtmc} - instance of @var{octave_usbtmc} class.@* \
 @var{n} - number of bytes to attempt to read of type Integer.\n \
 \n\
 The usbtmc_read() shall return number of bytes successfully read in @var{count} as Integer and the bytes themselves in @var{data} as uint8 array.\n \

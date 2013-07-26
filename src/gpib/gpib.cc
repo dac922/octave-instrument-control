@@ -35,7 +35,7 @@ DEFUN_DLD (gpib, args, nargout,
 \n\
 Open gpib interface.\n \
 \n\
-@var{gpibid} - the interface number. @*\
+@var{gpibid} - the interface number.@* \
 @var{timeout} - the interface timeout value. If omitted defaults to blocking call.\n \
 \n\
 The gpib() shall return instance of @var{octave_gpib} class as the result @var{gpib}.\n \

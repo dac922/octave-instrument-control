@@ -36,7 +36,7 @@ DEFUN_DLD (usbtmc, args, nargout,
 \n\
 Open usbtmc interface.\n \
 \n\
-@var{path} - the interface path of type String. If omitted defaults to '/dev/usbtmc0'. @*\
+@var{path} - the interface path of type String. If omitted defaults to '/dev/usbtmc0'.\n \
 \n\
 The usbtmc() shall return instance of @var{octave_usbtmc} class as the result @var{usbtmc}.\n \
 @end deftypefn")

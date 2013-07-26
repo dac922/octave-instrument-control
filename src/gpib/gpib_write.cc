@@ -36,7 +36,7 @@ DEFUN_DLD (gpib_write, args, nargout,
 \n\
 Write data to a gpib interface.\n \
 \n\
-@var{gpib} - instance of @var{octave_gpib} class.@*\
+@var{gpib} - instance of @var{octave_gpib} class.@* \
 @var{data} - data to be written to the gpib interface. Can be either of String or uint8 type.\n \
 \n\
 Upon successful completion, gpib_write() shall return the number of bytes written as the result @var{n}.\n \

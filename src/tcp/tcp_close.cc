@@ -32,7 +32,7 @@ DEFUN_DLD (tcp_close, args, nargout,
 \n\
 Close the interface and release a file descriptor.\n \
 \n\
-@var{tcp} - instance of @var{octave_tcp} class.@*\
+@var{tcp} - instance of @var{octave_tcp} class.\n \
 @end deftypefn")
 {
 #ifndef BUILD_TCP

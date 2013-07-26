@@ -32,7 +32,7 @@ DEFUN_DLD (usbtmc_close, args, nargout,
 \n\
 Close the interface and release a file descriptor.\n \
 \n\
-@var{usbtmc} - instance of @var{octave_usbtmc} class.@*\
+@var{usbtmc} - instance of @var{octave_usbtmc} class.\n \
 @end deftypefn")
 {
 #ifndef BUILD_USBTMC

@@ -32,7 +32,7 @@ DEFUN_DLD (tcp_write, args, nargout,
 \n\
 Write data to a tcp interface.\n \
 \n\
-@var{tcp} - instance of @var{octave_tcp} class.@*\
+@var{tcp} - instance of @var{octave_tcp} class.@* \
 @var{data} - data to be written to the tcp interface. Can be either of String or uint8 type.\n \
 \n\
 Upon successful completion, tcp_write() shall return the number of bytes written as the result @var{n}.\n \

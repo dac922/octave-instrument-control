@@ -34,7 +34,7 @@ DEFUN_DLD (usbtmc_write, args, nargout,
 \n\
 Write data to a usbtmc slave device.\n \
 \n\
-@var{usbtmc} - instance of @var{octave_usbtmc} class.@*\
+@var{usbtmc} - instance of @var{octave_usbtmc} class.@* \
 @var{data} - data, of type uint8, to be written to the slave device.\n \
 \n\
 Upon successful completion, usbtmc_write() shall return the number of bytes written as the result @var{n}.\n \

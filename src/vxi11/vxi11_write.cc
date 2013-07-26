@@ -32,7 +32,7 @@ DEFUN_DLD (vxi11_write, args, nargout,
 \n\
 Write data to a vxi11 slave device.\n \
 \n\
-@var{vxi11} - instance of @var{octave_vxi11} class.@*\
+@var{vxi11} - instance of @var{octave_vxi11} class.@* \
 @var{data} - data to be written to the slave device. Can be either of String or uint8 type.\n \
 \n\
 Upon successful completion, vxi11_write() shall return the number of bytes written as the result @var{n}.\n \
