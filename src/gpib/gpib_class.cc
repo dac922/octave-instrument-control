@@ -346,11 +346,6 @@ int octave_gpib::close()
             return -1;
         }
 
-        gperr = ibclr(fd);
-        if (gperr & ERR) {
-            error("gpib_close: can not clear device");
-        }
-
         gperr = ibloc(fd);
         if (gperr & ERR) {
             error("gpib_close: can not set device to local");
