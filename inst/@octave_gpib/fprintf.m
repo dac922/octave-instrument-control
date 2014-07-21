@@ -29,32 +29,34 @@
 ## @end deftypefn
 
 ## TODO: 
-function fprintf(obj, format, cmd, mode)
+function fprintf (obj, format, cmd, mode)
 
 defaultformat = '%s\n';
 defaultmode = 'sync';
 
-if (nargin < 2)
+if ((nargin < 2) || (nargin > 4))
   print_usage ();
 elseif (nargin < 3)
   format = defaultformat;
   mode = defaultmode;
 elseif (nargin < 4)
-  %% decide for syntax ..format, cmd or ...cmd, mode
-  if (!isempty(find(format == '%')))
+  %% decide for syntax
+  if (!isempty (find (format == '%')))
+    %% detected: fprintf (obj, format, cmd))
     mode = defaultmode;
   else
+    %% fprintf (obj, cmd, mode)
     mode = cmd;
     cmd = format;
     format = defaultformat;
   end
 end
 
-if (!( ischar(format) && ischar(mode) ))
+if (! ( ischar (format) && ischar (mode) ))
   print_usage ();
 end
 
-if (strcmp (mode,'async'))
+if (strcmp (mode, 'async'))
   error ("async mode not supported yet");
 end
 
