@@ -62,7 +62,7 @@ switch (precision)
   case {"uint16" "ushort"}
     data = uint16 (data);
   case {"int32" "int"}
-    data = int32 data);
+    data = int32 (data);
   case {"uint32" "uint"}
     data = uint32 (data);
   case {"long" "int64"}
