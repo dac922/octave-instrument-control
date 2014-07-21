@@ -29,7 +29,11 @@
 #include <string.h>
 #include <fcntl.h>
 #include <errno.h>
+#ifdef __linux__
+#include <termio.h>
+#else
 #include <termios.h>
+#endif
 #include <unistd.h>
 #endif
 
@@ -104,6 +108,12 @@ int octave_serial::open(string path, int flags)
 octave_serial::~octave_serial()
 {
     this->close();
+}
+
+void octave_serial::print (std::ostream& os, bool pr_as_read_syntax )
+{
+    print_raw(os, pr_as_read_syntax);
+    newline(os);
 }
 
 void octave_serial::print (std::ostream& os, bool pr_as_read_syntax ) const
@@ -544,6 +554,56 @@ string octave_serial::get_parity()
         return "Odd";
     else
         return "Even";
+}
+
+void octave_serial::get_control_line_status(void)
+{
+  if (this->get_fd() < 0)
+    {
+      error("serial: Interface must be opened first...");
+      return;
+    }
+  ioctl(this->get_fd(), TIOCMGET, &this->status);
+}
+
+bool octave_serial::get_control_line(string control_signal)
+{
+  get_control_line_status ();
+    
+  if (control_signal == "DTR")
+    return (this->status & TIOCM_DTR);
+  else if (control_signal == "RTS")
+    return (this->status & TIOCM_RTS);
+
+  error("serial: Unknown control signal...");
+  return false;
+
+}
+
+void octave_serial::set_control_line(string control_signal, bool set)
+{
+
+  get_control_line_status ();
+  
+  int signal;
+    
+  if (control_signal == "DTR")
+    signal = TIOCM_DTR;
+  else if (control_signal == "RTS")
+    signal = TIOCM_RTS;
+  else
+    {
+      error("serial: Unknown control signal...");
+      return;
+    }
+    
+  if (set)
+    this->status |= signal;
+  else
+    this->status &= ~signal;
+    
+  ioctl(this->get_fd(), TIOCMSET, &this->status);
+
 }
 
 int octave_serial::get_fd()

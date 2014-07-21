@@ -61,6 +61,8 @@ public:
     int set_stopbits(unsigned short /* stop bits */);
     int get_stopbits();
 
+    bool get_control_line(string);
+    void set_control_line(string, bool);
 
     // Overloaded base functions
     double serial_value() const { return (double)this->fd; }
@@ -70,6 +72,7 @@ public:
         return (double)this->fd;
     }
 
+    void print (std::ostream& os, bool pr_as_read_syntax = false);
     void print (std::ostream& os, bool pr_as_read_syntax = false) const;
     void print_raw (std::ostream& os, bool pr_as_read_syntax) const;
 
@@ -81,9 +84,12 @@ public:
 
 private:
     int fd;
+    int status;
     struct termios config;
 
     volatile bool blocking_read;
+
+    void get_control_line_status(void);
 
     DECLARE_OCTAVE_ALLOCATOR
     DECLARE_OV_TYPEID_FUNCTIONS_AND_DATA
