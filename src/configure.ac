@@ -25,6 +25,7 @@ build_tcp=no
 build_gpib=no
 build_vxi11=no
 build_visa=no
+build_modbus=no
 
 # check for i2c
 # if linux/i2c-dev.h exists we are probably under linux, so build usbtmc as well
@@ -85,6 +86,14 @@ if test "x$ac_cv_search_viOpenDefaultRM" != "xnone required"; then
   AC_SUBST(VISALIBS, [$ac_cv_search_viOpenDefaultRM])
 fi
 
+# Check for libmodbus
+AC_CHECK_HEADERS([modbus/modbus.h],
+  [AC_SEARCH_LIBS([modbus_new_tcp], [modbus], [build_modbus=yes], [])] , [] )
+
+if test "x$ac_cv_search_modbus_new_tcp" != "xnone required"; then
+  AC_SUBST(MODBUSLIBS, [$ac_cv_search_modbus_new_tcp])
+fi
+
 
 #
 
@@ -121,10 +130,14 @@ if test $build_visa = yes; then
   AC_DEFINE([BUILD_VISA], [], [build VISA interface functions])
 fi
 
+if test $build_modbus = yes; then
+  AC_DEFINE([BUILD_MODBUS], [], [build MODBUS interface functions])
+fi
+
 
 # all done
 
-AC_CONFIG_FILES([Makefile gpib/Makefile tcp/Makefile vxi11/Makefile usbtmc/Makefile serial/Makefile parallel/Makefile i2c/Makefile])
+AC_CONFIG_FILES([Makefile gpib/Makefile tcp/Makefile vxi11/Makefile usbtmc/Makefile serial/Makefile parallel/Makefile i2c/Makefile modbus/Makefile])
 AC_OUTPUT
 
 AC_MSG_NOTICE([
@@ -138,10 +151,12 @@ $PACKAGE_NAME is now configured with
    BUILD USBTMC:      $build_usbtmc
    BUILD GPIB:        $build_gpib
    BUILD VXI11:       $build_vxi11
+   BUILD MODBUS:      $build_modbus
 
    GPIB LIBS:         $GPIBLIBS
    VXI11 LIBS:        $RPCLIBS
    VXI11 INCLUDE:     $RPCINCLUDE
    VISA LIBS:         $VISALIBS
+   MODBUS LIBS:       $MODBUSLIBS
 
 ])

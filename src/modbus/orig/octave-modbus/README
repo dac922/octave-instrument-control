@@ -1,0 +1,14 @@
+BUILD:
+-----
+
+You must have libmodbus installed. cd into Modbus directory and run "make". You may have to edit Makefile and change CFLAGS and LDFLAGS so that they fit your installation.
+
+TEST:
+----
+
+run "make check".
+
+USAGE:
+-----
+
+The modbus functions have to be loaded first using "load_modbus". Then obtain a context using modbus_new_tcp, open the comunication using modbus_connect, write/read to registers/bits using the corresponding modbus_write/read_bits/registers functions. Close and free the context. See examples in test directory.

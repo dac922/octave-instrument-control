@@ -21,3 +21,6 @@
 
 /* build VXI11 interface functions */
 #undef BUILD_VXI11
+
+/* build MODBUS interface functions */
+#undef BUILD_MODBUS

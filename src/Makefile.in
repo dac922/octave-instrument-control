@@ -1,5 +1,5 @@
 
-SUBDIRS = serial parallel i2c usbtmc tcp gpib vxi11
+SUBDIRS = serial parallel i2c usbtmc tcp gpib vxi11 modbus
 
 MKOCTFILE ?= mkoctfile
 

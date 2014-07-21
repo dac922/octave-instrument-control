@@ -1,0 +1,22 @@
+OCT := modbus.oct
+
+MKOCTFILE ?= mkoctfile
+
+CFLAGS     = @DEFS@
+LDFLAGS    = @MODBUSLIBS@
+
+all: $(OCT)
+
+%.o: %.cc
+	$(MKOCTFILE) $(CFLAGS) -c $^
+
+%.oct: %.o
+	$(MKOCTFILE) $(LDFLAGS) -o ../$@ $^
+
+clean:
+	rm -f *.oct *.o
+
+distclean: clean
+	rm Makefile
+
+.PHONY: all clean
