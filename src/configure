@@ -621,6 +621,7 @@ ac_includes_default="\
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
 BUILD_VXI11
+MODBUSLIBS
 VISALIBS
 RPCLIBS
 RPCINCLUDE
@@ -2595,6 +2596,7 @@ build_tcp=no
 build_gpib=no
 build_vxi11=no
 build_visa=no
+build_modbus=no
 
 # check for i2c
 # if linux/i2c-dev.h exists we are probably under linux, so build usbtmc as well
@@ -3436,6 +3438,80 @@ if test "x$ac_cv_search_viOpenDefaultRM" != "xnone required"; then
 
 fi
 
+# Check for libmodbus
+for ac_header in modbus/modbus.h
+do :
+  ac_fn_cxx_check_header_mongrel "$LINENO" "modbus/modbus.h" "ac_cv_header_modbus_modbus_h" "$ac_includes_default"
+if test "x$ac_cv_header_modbus_modbus_h" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_MODBUS_MODBUS_H 1
+_ACEOF
+ { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing modbus_new_tcp" >&5
+$as_echo_n "checking for library containing modbus_new_tcp... " >&6; }
+if ${ac_cv_search_modbus_new_tcp+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_func_search_save_LIBS=$LIBS
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char modbus_new_tcp ();
+int
+main ()
+{
+return modbus_new_tcp ();
+  ;
+  return 0;
+}
+_ACEOF
+for ac_lib in '' modbus; do
+  if test -z "$ac_lib"; then
+    ac_res="none required"
+  else
+    ac_res=-l$ac_lib
+    LIBS="-l$ac_lib  $ac_func_search_save_LIBS"
+  fi
+  if ac_fn_cxx_try_link "$LINENO"; then :
+  ac_cv_search_modbus_new_tcp=$ac_res
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext
+  if ${ac_cv_search_modbus_new_tcp+:} false; then :
+  break
+fi
+done
+if ${ac_cv_search_modbus_new_tcp+:} false; then :
+
+else
+  ac_cv_search_modbus_new_tcp=no
+fi
+rm conftest.$ac_ext
+LIBS=$ac_func_search_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_search_modbus_new_tcp" >&5
+$as_echo "$ac_cv_search_modbus_new_tcp" >&6; }
+ac_res=$ac_cv_search_modbus_new_tcp
+if test "$ac_res" != no; then :
+  test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
+  build_modbus=yes
+fi
+
+fi
+
+done
+
+
+if test "x$ac_cv_search_modbus_new_tcp" != "xnone required"; then
+  MODBUSLIBS=$ac_cv_search_modbus_new_tcp
+
+fi
+
 
 #
 
@@ -3489,10 +3565,16 @@ $as_echo "#define BUILD_VISA /**/" >>confdefs.h
 
 fi
 
+if test $build_modbus = yes; then
+
+$as_echo "#define BUILD_MODBUS /**/" >>confdefs.h
+
+fi
+
 
 # all done
 
-ac_config_files="$ac_config_files Makefile gpib/Makefile tcp/Makefile vxi11/Makefile usbtmc/Makefile serial/Makefile parallel/Makefile i2c/Makefile"
+ac_config_files="$ac_config_files Makefile gpib/Makefile tcp/Makefile vxi11/Makefile usbtmc/Makefile serial/Makefile parallel/Makefile i2c/Makefile modbus/Makefile"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -4192,6 +4274,7 @@ do
     "serial/Makefile") CONFIG_FILES="$CONFIG_FILES serial/Makefile" ;;
     "parallel/Makefile") CONFIG_FILES="$CONFIG_FILES parallel/Makefile" ;;
     "i2c/Makefile") CONFIG_FILES="$CONFIG_FILES i2c/Makefile" ;;
+    "modbus/Makefile") CONFIG_FILES="$CONFIG_FILES modbus/Makefile" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
@@ -4785,11 +4868,13 @@ $PACKAGE_NAME is now configured with
    BUILD USBTMC:      $build_usbtmc
    BUILD GPIB:        $build_gpib
    BUILD VXI11:       $build_vxi11
+   BUILD MODBUS:      $build_modbus
 
    GPIB LIBS:         $GPIBLIBS
    VXI11 LIBS:        $RPCLIBS
    VXI11 INCLUDE:     $RPCINCLUDE
    VISA LIBS:         $VISALIBS
+   MODBUS LIBS:       $MODBUSLIBS
 
 " >&5
 $as_echo "$as_me:
@@ -4803,10 +4888,12 @@ $PACKAGE_NAME is now configured with
    BUILD USBTMC:      $build_usbtmc
    BUILD GPIB:        $build_gpib
    BUILD VXI11:       $build_vxi11
+   BUILD MODBUS:      $build_modbus
 
    GPIB LIBS:         $GPIBLIBS
    VXI11 LIBS:        $RPCLIBS
    VXI11 INCLUDE:     $RPCINCLUDE
    VISA LIBS:         $VISALIBS
+   MODBUS LIBS:       $MODBUSLIBS
 
 " >&6;}
