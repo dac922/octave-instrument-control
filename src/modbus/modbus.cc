@@ -17,6 +17,12 @@ along with Octave; see the file COPYING.  If not, see
 
 */
 
+#ifdef HAVE_CONFIG_H
+#include "../config.h"
+#endif
+
+#ifdef BUILD_MODBUS
+
 #include <stdlib.h>
 #include <stdint.h>
 #include <errno.h>
@@ -908,3 +914,4 @@ To disable this behavior a third argument @var{INDIV} can be set to true.\n\
 
   return retval;
 }
+#endif
