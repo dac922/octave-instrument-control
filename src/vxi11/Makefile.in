@@ -28,8 +28,8 @@ endif
 %.o: %.cc
 	$(MKOCTFILE) $(CFLAGS) $(RPCINCLUDE) -c $^
 
-%.oct: %.o
-	$(MKOCTFILE) $^ $(OBJ) $(VXI) $(LFLAGS) -o ../$@
+%.oct: %.o $(OBJ)
+	$(MKOCTFILE) $^ $(VXI) $(LFLAGS) -o ../$@
 
 clean:
 	rm -f *.oct *.o

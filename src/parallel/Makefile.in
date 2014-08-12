@@ -10,8 +10,8 @@ all: $(OBJ) $(OCT)
 %.o: %.cc
 	$(MKOCTFILE) $(CFLAGS) -c $^
 
-%.oct: %.o
-	$(MKOCTFILE) $^ $(OBJ) -o ../$@
+%.oct: %.o $(OBJ)
+	$(MKOCTFILE) $^ -o ../$@
 
 clean:
 	rm -f *.oct *.o
