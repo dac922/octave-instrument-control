@@ -43,10 +43,20 @@ AC_CHECK_HEADERS([dev/ppbus/ppi.h dev/ppbus/ppbconf.h],[build_parallel=yes])
 AC_CHECK_HEADERS([sys/socket.h],[build_tcp=yes])
 
 # Check for winsock2 and ws2_32
+have_winsock2=no
 AC_CHECK_HEADERS([winsock2.h],
   [AC_SEARCH_LIBS([_head_libws2_32_a], [ws2_32],
-    [AC_SUBST(TCPLIBS, ["-lws2_32"]) build_tcp=yes] , [] )] , [])
+                  [have_winsock2=yes] , [] )
+   AC_SEARCH_LIBS([_head_lib32_libws2_32_a], [ws2_32],
+                  [have_winsock2=yes] , [] )
+   AC_SEARCH_LIBS([_head_lib64_libws2_32_a], [ws2_32],
+                  [have_winsock2=yes] , [] )
+  ], [])
 
+if test $have_winsock2 = yes; then
+  AC_SUBST(TCPLIBS, ["-lws2_32"])
+  build_tcp=yes
+fi
 
 # Checks for GPIB
 AC_CHECK_HEADERS([gpib/ib.h],
