@@ -1,6 +1,10 @@
 instrument-control >> Low level I/O functions
 Serial
   serial
+  fopen
+  fclose
+  get
+  set
   srl_read
   srl_write
   srl_baudrate
@@ -12,6 +16,8 @@ Serial
   srl_close
 I2C
   i2c
+  fopen
+  fclose
   i2c_addr
   i2c_read
   i2c_write
@@ -25,12 +31,16 @@ Parallel
   pp_close
 TCP
   tcp
+  fopen
+  fclose
   tcp_read
   tcp_write
   tcp_timeout
   tcp_close
 USBTMC
   usbtmc
+  fopen
+  fclose
   usbtmc_read
   usbtmc_write
   usbtmc_close
@@ -50,6 +60,9 @@ GPIB
   clrdevice
 VXI11
   vxi11
+  fopen
+  fclose
   vxi11_read
   vxi11_write
   vxi11_close
+

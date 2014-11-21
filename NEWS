@@ -11,6 +11,27 @@ Summary of important user-visible changes for instrument-control 0.2.1:
         fprintf
         fscanf
 
+  ** I2C, TCPIP, USBTMC, VXI11: New functions:
+        fopen
+        fclose
+
+  ** SERIAL: Add Win32 support
+
+  ** SERIAL: New functions:
+        fclose
+        fopen
+        get
+        set
+
+  ** SERIAL: Deprecate functions, use set and get instead:
+        srl_baudrate
+        srl_bytesize
+        srl_close
+        srl_flush
+        srl_parity
+        srl_stopbits
+        srl_timeout
+
 
 Summary of important user-visible changes for instrument-control 0.2.0:
 -------------------------------------------------------------------
