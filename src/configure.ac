@@ -27,6 +27,26 @@ build_vxi11=no
 build_visa=no
 build_modbus=no
 
+# Check for Windows
+AC_MSG_CHECKING([for windows])
+have_windows=no
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+   #include <windows.h>
+   #ifndef __WIN32__
+     #error "Not windows!"
+   #endif
+  ]], [])],
+ [AC_MSG_RESULT([yes])
+  have_windows=yes],
+ [AC_MSG_RESULT([no])])
+
+# if windows, we can build some of the packages just by having
+# windows.h
+if test $have_windows = yes; then
+  build_serial=yes
+  AC_SUBST([BUILD_FOR_WINDOWS], [1], [build using native windows functions])
+fi
+
 # check for i2c
 # if linux/i2c-dev.h exists we are probably under linux, so build usbtmc as well
 AC_CHECK_HEADERS([linux/i2c-dev.h],[build_i2c=yes build_usbtmc=yes])

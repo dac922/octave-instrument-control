@@ -69,11 +69,6 @@ The serial() shall return instance of @var{octave_serial} class as the result @v
     unsigned short bytesize = 8;
     string parity("N");
     unsigned short stopbits = 1;
-    int oflags = O_RDWR | O_NOCTTY | O_SYNC | O_NDELAY; 
-    // O_SYNC - All writes immediately effective, no buffering
-    // O_NOCTTY - Do not make serial terminal the controlling terminal for the process
-    // O_NDELAY - Do not care what state the DCD signal line is in. Used for open only, later disabled.
-
     // Parse the function arguments
     if (args.length() > 0)
     {
@@ -121,7 +116,7 @@ The serial() shall return instance of @var{octave_serial} class as the result @v
     octave_serial* retval = new octave_serial();
 
     // Open the interface
-    if (retval->open(path, oflags) < 0)
+    if (retval->open(path) < 0)
         return octave_value();
 
     retval->set_baudrate(baud_rate);

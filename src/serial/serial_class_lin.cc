@@ -51,15 +51,20 @@ octave_serial::octave_serial()
     this->fd = -1;
 }
 
-int octave_serial::open(string path, int flags)
+int octave_serial::open(string path)
 {
+    int flags = O_RDWR | O_NOCTTY | O_SYNC | O_NDELAY;
+    // O_SYNC - All writes immediately effective, no buffering
+    // O_NOCTTY - Do not make serial terminal the controlling terminal for the process
+    // O_NDELAY - Do not care what state the DCD signal line is in. Used for open only, later disabled.
+
     this->fd = ::open(path.c_str(), flags);
 
     if (this->get_fd() > 0)
-    {   
-        // Check whether fd is an open file descriptor referring to a terminal 
-        if(!isatty(fd)) 
-        { 
+    {
+        // Check whether fd is an open file descriptor referring to a terminal
+        if(!isatty(fd))
+        {
             error("serial: Interface does not refer to a terminal: %s\n", strerror(errno));
             this->close();
             return -1;
@@ -83,7 +88,7 @@ int octave_serial::open(string path, int flags)
         {
             error("serial: Failed to set default terminal attributes: %s\n", strerror(errno));
             this->close();
-            return -1; 
+            return -1;
         }
 
         // Disable NDELAY
@@ -91,11 +96,11 @@ int octave_serial::open(string path, int flags)
         {
             error("serial: Failed to disable NDELAY flag: %s\n", strerror(errno));
             this->close();
-            return -1; 
+            return -1;
         }
 
         this->blocking_read = true;
-    } 
+    }
     else
     {
         error("serial: Error opening the interface: %s\n", strerror(errno));
@@ -139,7 +144,7 @@ int octave_serial::read(uint8_t *buf, unsigned int len)
     ssize_t read_retval = -1;
 
     // While not interrupted in blocking mode
-    while (!read_interrupt) 
+    while (!read_interrupt)
     {
         read_retval = ::read(this->get_fd(), (void *)(buf + bytes_read), len - bytes_read);
         //printf("read_retval: %d\n\r", read_retval);
@@ -205,9 +210,9 @@ int octave_serial::set_timeout(short timeout)
     {
         this->blocking_read = true;
         timeout = 5;
-    } 
+    }
     // Enable custom timeout, disable blocking read
-    else 
+    else
     {
         this->blocking_read = false;
     }
@@ -292,7 +297,7 @@ int octave_serial::set_bytesize(unsigned short bytesize)
 
     tcflag_t c_bytesize = 0;
 
-    switch (bytesize) 
+    switch (bytesize)
     {
     case 5: c_bytesize = CS5; break;
     case 6: c_bytesize = CS6; break;
@@ -340,7 +345,7 @@ int octave_serial::get_bytesize()
     return retval;
 }
 
-int octave_serial::set_baudrate(unsigned int baud) 
+int octave_serial::set_baudrate(unsigned int baud)
 {
     if (this->get_fd() < 0)
     {
@@ -350,9 +355,9 @@ int octave_serial::set_baudrate(unsigned int baud)
 
     speed_t baud_rate = 0;
 
-    switch (baud) 
+    switch (baud)
     {
-    case 0: 
+    case 0:
         baud_rate = B0; break;
     case 50:
         baud_rate = B50; break;
@@ -569,7 +574,7 @@ void octave_serial::get_control_line_status(void)
 bool octave_serial::get_control_line(string control_signal)
 {
   get_control_line_status ();
-    
+
   if (control_signal == "DTR")
     return (this->status & TIOCM_DTR);
   else if (control_signal == "RTS")
@@ -584,9 +589,9 @@ void octave_serial::set_control_line(string control_signal, bool set)
 {
 
   get_control_line_status ();
-  
+
   int signal;
-    
+
   if (control_signal == "DTR")
     signal = TIOCM_DTR;
   else if (control_signal == "RTS")
@@ -596,12 +601,12 @@ void octave_serial::set_control_line(string control_signal, bool set)
       error("serial: Unknown control signal...");
       return;
     }
-    
+
   if (set)
     this->status |= signal;
   else
     this->status &= ~signal;
-    
+
   ioctl(this->get_fd(), TIOCMSET, &this->status);
 
 }

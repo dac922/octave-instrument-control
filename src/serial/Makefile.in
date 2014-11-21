@@ -1,5 +1,10 @@
 OCT := serial.oct srl_write.oct srl_read.oct __srl_properties__.oct
-OBJ := serial_class.o
+
+ifeq ("@BUILD_FOR_WINDOWS@","1")
+  OBJ := serial_class_win32.o
+else
+  OBJ := serial_class_lin.o
+endif
 
 MKOCTFILE ?= mkoctfile
 

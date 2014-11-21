@@ -16,83 +16,10 @@
 #ifndef SERIAL_CLASS_H
 #define SERIAL_CLASS_H
 
-#include <octave/oct.h>
-#include <octave/ov-int32.h>
-
-#include <string>
-#include <termios.h>
-
-using std::string;
-
-#define BITMASK_SET(x,y) ((x) |= (y))
-#define BITMASK_CLEAR(x,y) ((x) &= (~(y)))
-#define BITMASK_TOGGLE(x,y) ((x) ^= (y))
-#define BITMASK_CHECK(x,y) ((x) & (y))
-
-class octave_serial : public octave_base_value 
-{
-public:
-    octave_serial();
-    ~octave_serial();
-
-    int write(string /* buffer */);
-    int write(uint8_t* /* buffer */, unsigned int /* buffer size */);
-
-    int read(uint8_t* /* buffer */, unsigned int /* buffer size */);
-
-    int open(string /* path */, int /* open flags */);
-    int close();
-    int get_fd();
-
-    int flush(unsigned short /* stream select */);
-
-    int set_timeout(short /* timeout */);
-    int get_timeout();
-
-    int set_baudrate(unsigned int /* baudrate */);
-    int get_baudrate();
-
-    int set_bytesize(unsigned short /* bytesize */);
-    int get_bytesize();
-
-    int set_parity(string /* parity */);
-    string get_parity();
-
-    int set_stopbits(unsigned short /* stop bits */);
-    int get_stopbits();
-
-    bool get_control_line(string);
-    void set_control_line(string, bool);
-
-    // Overloaded base functions
-    double serial_value() const { return (double)this->fd; }
-
-    virtual double scalar_value (bool frc_str_conv = false) const 
-    {
-        return (double)this->fd;
-    }
-
-    void print (std::ostream& os, bool pr_as_read_syntax = false);
-    void print (std::ostream& os, bool pr_as_read_syntax = false) const;
-    void print_raw (std::ostream& os, bool pr_as_read_syntax) const;
-
-    // Properties
-    bool is_constant (void) const { return true;}
-    bool is_defined (void) const { return true;}
-    bool print_as_scalar (void) const { return true;}
-
-
-private:
-    int fd;
-    int status;
-    struct termios config;
-
-    volatile bool blocking_read;
-
-    void get_control_line_status(void);
-
-    DECLARE_OCTAVE_ALLOCATOR
-    DECLARE_OV_TYPEID_FUNCTIONS_AND_DATA
-};
+#ifdef __WIN32__
+ #include "serial_class_win32.h"
+#else
+ #include "serial_class_lin.h"
+#endif
 
 #endif
