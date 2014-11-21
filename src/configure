@@ -631,6 +631,7 @@ TCPLIBS
 EGREP
 GREP
 CXXCPP
+BUILD_FOR_WINDOWS
 HAVE_MKOCTFILE
 OBJEXT
 EXEEXT
@@ -2598,9 +2599,47 @@ build_vxi11=no
 build_visa=no
 build_modbus=no
 
+# Check for Windows
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for windows" >&5
+$as_echo_n "checking for windows... " >&6; }
+have_windows=no
+
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+   #include <windows.h>
+   #ifndef __WIN32__
+     #error "Not windows!"
+   #endif
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_compile "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: yes" >&5
+$as_echo "yes" >&6; }
+  have_windows=yes
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
+$as_echo "no" >&6; }
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+
+# if windows, we can build some of the packages just by having
+# windows.h
+if test $have_windows = yes; then
+  build_serial=yes
+  BUILD_FOR_WINDOWS=1
+
+fi
+
 # check for i2c
 # if linux/i2c-dev.h exists we are probably under linux, so build usbtmc as well
-
 ac_ext=cpp
 ac_cpp='$CXXCPP $CPPFLAGS'
 ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
